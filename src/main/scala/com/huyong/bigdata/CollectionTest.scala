@@ -24,6 +24,36 @@ class CollectionTest {
     println(test)
     println(test1)
     println(test ++ test1)
+    println(test.mkString(","))
+  }
+
+  def testMap(): Unit = {
+    val test = Map("hello" -> "world", "hu" -> "yong", "1 + 1" -> "2")
+    val test1 = Map("2 + 2" -> "4", "3 + 3" -> "6", "1 + 1" -> "3")
+    println(test)
+    println(test.keys)
+    println(test.values)
+    println(test ++ test1)
+    println(test.++(test1))
+    println(test.-("hello"))
+    println(test.drop(1))
+    println(test.toList)
+  }
+
+  def testTuple(): Unit = {
+    val test = (1,2,3,4,"hello")
+    val test1 = new Tuple5(1,2,3,4,"hello")
+    println(test)
+    println(test1)
+    println(test._1)
+    test.productIterator.foreach(print)
+  }
+
+  def testOption(): Unit = {
+    val test = Map(1 -> 2)
+    val maybeInt : Option[Int] = test.get(1)
+    println(maybeInt)
+    println(test.get(2))
   }
 }
 object CollectionTest{
@@ -31,6 +61,6 @@ object CollectionTest{
 
   def main(args: Array[String]): Unit = {
     val instance = new CollectionTest();
-    instance.testSet()
+    instance.testOption()
   }
 }
