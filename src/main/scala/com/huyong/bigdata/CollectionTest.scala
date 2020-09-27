@@ -53,7 +53,12 @@ class CollectionTest {
     val test = Map(1 -> 2)
     val maybeInt : Option[Int] = test.get(1)
     println(maybeInt)
-    println(test.get(2))
+    println(test.getOrElse(2, 3))
+  }
+
+  def testIterator(): Unit = {
+    val test = Iterator(1,2,3,4)
+    test.foreach(print)
   }
 }
 object CollectionTest{
@@ -61,6 +66,6 @@ object CollectionTest{
 
   def main(args: Array[String]): Unit = {
     val instance = new CollectionTest();
-    instance.testOption()
+    instance.testIterator()
   }
 }
