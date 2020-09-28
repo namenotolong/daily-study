@@ -32,6 +32,7 @@ object TestMatch{
   def main(args: Array[String]): Unit = {
     val test1 = TestCase1(4, "hello")
     val test2 = TestCase2(9, "world")
+    test1.run();
     val instance = new TestMatch
     instance.testCaseClass(test1)
     instance.testCaseClass(test2)
@@ -39,6 +40,11 @@ object TestMatch{
     println(s"hello world $test1")
   }
 }
-case class TestCase1(num : Int, name : String) extends BaseTestCase
+case class TestCase1(num : Int, name : String) extends BaseTestCase {
+  def run(): Unit = {
+    println("run")
+  }
+}
+
 case class TestCase2(num : Int, name : String) extends BaseTestCase
 trait BaseTestCase
