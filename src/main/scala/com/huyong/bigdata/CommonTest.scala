@@ -22,9 +22,37 @@ object CommonTest{
     })
   }
 
+  def test1[T] (param : String)(f: =>T): T = {
+    println(param)
+    println(f)
+    f
+  }
+  def test2[T] (param : String, f: =>T): T = {
+    println(param)
+    println(f)
+    f
+  }
+  def testName() : Int = {
+    println("i am invoked")
+    100
+  }
+
+  lazy val ana = testMap()
+
+  type aaa = String
+
   def func(a : Int)(b : Int) : Int = a
 
   def main(args: Array[String]): Unit = {
-    CommonTest.test()
+    CommonTest.test1("hello world") {
+      println("i am invoked")
+      100
+    }
+    CommonTest.test2("hello world", {
+      println("i am invoked")
+      100
+    })
+    val data = List(1,2,3,4,5,6)
+    println(data.toSeq(1))
   }
 }
