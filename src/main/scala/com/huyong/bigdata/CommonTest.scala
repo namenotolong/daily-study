@@ -53,6 +53,13 @@ object CommonTest{
       100
     })
     val data = List(1,2,3,4,5,6)
-    println(data.toSeq(1))
+    val data1 = List(1,2,3,4,5,6)
+    println(CommonTest.testList(data,data1))
+    val list1 = List(List(1,2,3),List(3,4,5),List(2),List(0))
+    println(list1.aggregate(2)(_+_.max,_-_))
+  }
+
+  def testList(list1 : List[Int], list2 : List[Int]): List[Int] = {
+    list1 ::: list2
   }
 }
