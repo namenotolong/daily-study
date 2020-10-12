@@ -1,0 +1,17 @@
+<html>
+<head>
+    <title>websocket test</title>
+</head>
+<body>
+<input type="text" id="text" />
+<input type="button" value="send" onclick="send()" />
+<script>
+    function send() {
+        const http = new XMLHttpRequest();
+        const url = '/ws';
+        http.open("GET", url);
+        http.send();
+    }
+</script>
+</body>
+</html>
