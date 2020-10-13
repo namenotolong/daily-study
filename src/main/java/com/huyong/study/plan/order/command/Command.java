@@ -1,4 +1,4 @@
-package com.huyong.study.plan.order;
+package com.huyong.study.plan.order.command;
 
 /**
  * 描述:

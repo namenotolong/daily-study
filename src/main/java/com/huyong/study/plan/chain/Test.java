@@ -1,7 +1,7 @@
 package com.huyong.study.plan.chain;
 
 /**
- * 描述:
+ * 描述: 责任链模式，流水线的执行模式，便于增加、减少流程
  *
  * @author huyong
  * @date 2020-08-13 10:06 下午

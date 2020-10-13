@@ -1,4 +1,4 @@
-package com.huyong.study.plan.order;
+package com.huyong.study.plan.order.command;
 
 /**
  * 描述:
@@ -9,8 +9,6 @@ package com.huyong.study.plan.order;
 public class OpenCommon extends BaseCommand {
     @Override
     public void execute() {
-        for (final Receiver receiver : receivers) {
-            System.out.println(receiver.getClass() + "开门了");
-        }
+        super.execute();
     }
 }

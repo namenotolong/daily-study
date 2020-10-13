@@ -1,7 +1,7 @@
 package com.huyong.study.plan.dress;
 
 /**
- * 描述:
+ * 描述: 装饰着模式，动态的增加功能
  *
  * @author huyong
  * @date 2020-08-13 9:50 下午

@@ -14,6 +14,6 @@ public class Adaptor implements ChargeHead {
 
     @Override
     public void charge() {
-        new XiaoMiChargeHead().charge();
+        phone.getChargeHead().charge();
     }
 }

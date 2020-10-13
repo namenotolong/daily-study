@@ -8,4 +8,5 @@ package com.huyong.study.plan.adapt;
  */
 public interface Phone {
     ChargeHead getChargeHead();
+    void setChargeHead(ChargeHead chargeHead);
 }
