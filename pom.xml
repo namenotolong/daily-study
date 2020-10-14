@@ -7,6 +7,10 @@
     <groupId>com.huyong</groupId>
     <artifactId>study</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <properties>
+        <antlr4.version>4.7.2</antlr4.version>
+    </properties>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
         <dependency>
@@ -45,7 +49,31 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4</artifactId>
+            <version>${antlr4.version}</version>
+        </dependency>
 
     </dependencies>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>${antlr4.version}</version>
+                <configuration>
+                    <visitor>true</visitor>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>antlr</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
