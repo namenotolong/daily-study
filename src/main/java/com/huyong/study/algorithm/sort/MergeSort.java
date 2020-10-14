@@ -1,11 +1,15 @@
 package com.huyong.study.algorithm.sort;
 
 /**
- * 描述: 归并排序
+ * 描述:归并排序
  *
  * @author huyong
  * @date 2020-10-14 2:12 下午
  */
 public class MergeSort {
+    public void sort(int[] arr, int start, int end) {
+        int middle = (end + start) / 2;
+
+    }
 
 }

@@ -1,5 +1,11 @@
 package com.huyong.study.algorithm;
 
+import com.huyong.study.algorithm.sort.BubblingSort;
+import com.huyong.study.algorithm.sort.InsertSort;
+import com.huyong.study.algorithm.sort.Sort;
+
+import java.util.Arrays;
+
 /**
  * 描述: 算法相关
  *
@@ -8,6 +14,9 @@ package com.huyong.study.algorithm;
  */
 public class Test {
     public static void main(String[] args) {
-
+        Sort sort = new InsertSort();
+        int[] arr = {1,2,3,1,2,3,1,2,7,8,8,1,2};
+        sort.sort(arr);
+        System.out.println(Arrays.toString(arr));
     }
 }
