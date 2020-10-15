@@ -1,8 +1,6 @@
 package com.huyong.study.algorithm;
 
-import com.huyong.study.algorithm.sort.BubblingSort;
-import com.huyong.study.algorithm.sort.InsertSort;
-import com.huyong.study.algorithm.sort.Sort;
+import com.huyong.study.algorithm.sort.*;
 
 import java.util.Arrays;
 
@@ -14,7 +12,7 @@ import java.util.Arrays;
  */
 public class Test {
     public static void main(String[] args) {
-        Sort sort = new InsertSort();
+        Sort sort = new HeapSort();
         int[] arr = {1,2,3,1,2,3,1,2,7,8,8,1,2};
         sort.sort(arr);
         System.out.println(Arrays.toString(arr));
