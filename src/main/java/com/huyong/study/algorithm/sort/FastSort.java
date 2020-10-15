@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
- * 描述:
+ * 描述:快速排序，非稳定
  *
  * @author huyong
  * @date 2020-10-14 2:32 下午

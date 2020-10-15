@@ -3,7 +3,7 @@ package com.huyong.study.algorithm.sort;
 import com.huyong.study.algorithm.utils.CommonUtils;
 
 /**
- * 描述: 冒泡排序
+ * 描述: 冒泡排序，稳定
  *
  * @author huyong
  * @date 2020-10-14 4:03 下午

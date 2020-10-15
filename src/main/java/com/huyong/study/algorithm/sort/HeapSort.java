@@ -2,10 +2,9 @@ package com.huyong.study.algorithm.sort;
 
 import com.huyong.study.algorithm.utils.CommonUtils;
 
-import java.util.Arrays;
 
 /**
- * 描述:堆排序
+ * 描述:堆排序，非稳定
  *
  * @author huyong
  * @date 2020-10-15 11:04 上午
@@ -15,15 +14,13 @@ public class HeapSort implements Sort {
     public void sort(int[] arr) {
         buildHeap(arr);
         for (int i = 1; i < arr.length; i++) {
-            System.out.println(Arrays.toString(arr));
             CommonUtils.swap(arr, 0, arr.length - i);
-            System.out.println(Arrays.toString(arr));
             downHeap(arr, 0, arr.length - i - 1);
         }
     }
 
     /**
-     * 初始化堆
+     * 初始化堆，大顶锥mode
      * @param arr
      */
     private void buildHeap(int[] arr) {
@@ -33,7 +30,7 @@ public class HeapSort implements Sort {
     }
 
     /**
-     * 向下过滤
+     * 下滤
      * @param arr
      * @param end
      */

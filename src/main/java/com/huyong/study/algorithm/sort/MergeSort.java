@@ -1,7 +1,7 @@
 package com.huyong.study.algorithm.sort;
 
 /**
- * 描述:归并排序
+ * 描述:归并排序，稳定算法
  *
  * @author huyong
  * @date 2020-10-14 2:12 下午

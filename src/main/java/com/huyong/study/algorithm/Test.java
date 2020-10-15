@@ -12,8 +12,8 @@ import java.util.Arrays;
  */
 public class Test {
     public static void main(String[] args) {
-        Sort sort = new HeapSort();
-        int[] arr = {1,2,3,1,2,3,1,2,7,8,8,1,2};
+        Sort sort = new InsertSort();
+        int[] arr = {1,2,3,1,2,3,12,13,65,233,98,10,234,1,2,7,8,8,1,2};
         sort.sort(arr);
         System.out.println(Arrays.toString(arr));
     }
