@@ -2,9 +2,6 @@ package com.huyong.study.algorithm.sort;
 
 import com.huyong.study.algorithm.utils.CommonUtils;
 
-import java.util.Arrays;
-import java.util.Random;
-
 /**
  * 描述:快速排序，非稳定
  *
@@ -24,8 +21,7 @@ public class FastSort implements Sort {
         }
         int i = start;
         int j = end;
-        //随机分配template
-        int template = arr[new Random().nextInt(end - start) + start];
+        int template = arr[start];
         while (i < j) {
             while (i < j && template < arr[j]) {
                 --j;
@@ -74,13 +70,5 @@ public class FastSort implements Sort {
         }
         sort1(arr, start, lt - 1);
         sort1(arr, gt + 1, end);
-    }
-
-
-    public static void main(String[] args) {
-        int[] arr = {6,6,10,1,3,4,7,6,9,12,2,1,2,3};
-        FastSort fastSort = new FastSort();
-        fastSort.sort1(arr, 0, arr.length - 1);
-        System.out.println(Arrays.toString(arr));
     }
 }

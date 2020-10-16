@@ -37,9 +37,10 @@ public class HeapSort implements Sort {
     private void downHeap(int[] arr, int start, int end) {
         int cur = start;
         for (; cur * 2 < end;) {
-            int left = cur * 2 + 1;
-            int right = cur * 2 + 2;
-            int t = arr[left] > arr[right] ? left : right;
+            int t = cur * 2 + 2;
+            if (t > end || arr[t] < arr[cur * 2 + 1]) {
+                --t;
+            }
             if (arr[t] > arr[cur]) {
                 CommonUtils.swap(arr, t, cur);
             } else{
