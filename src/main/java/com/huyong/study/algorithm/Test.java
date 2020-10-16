@@ -17,11 +17,11 @@ public class Test {
     public static void main(String[] args) throws Exception {
 
 
-        Sort sort = new BucketSort();
+        Sort sort = new FastSort();
         int[] arr = {1,2,3,1,2,3,12,13,65,0,0,233,98,10,0,234,1,2,7,8,8,1,2,-2,-1,-99,-11};
         sort.sort(arr);
         System.out.println(Arrays.toString(arr));
-        new Test().testSpeed();;
+       // new Test().testSpeed();;
     }
     public void testSpeed() {
         int[] data = new int[10000 * 100];

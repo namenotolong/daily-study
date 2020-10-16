@@ -61,6 +61,7 @@ public class FastSort implements Sort {
                 CommonUtils.swap(arr, lt++, i++);
             }
             else if (arr[i] > v) {
+                //为什么i不自增？因为i左边的一定比v小或者等于，i右边的有可能小于v，还需要检测一次
                 CommonUtils.swap(arr, i, gt--);
             }
             else {
