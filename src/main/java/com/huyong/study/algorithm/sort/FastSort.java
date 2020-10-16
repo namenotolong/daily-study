@@ -3,7 +3,7 @@ package com.huyong.study.algorithm.sort;
 import com.huyong.study.algorithm.utils.CommonUtils;
 
 /**
- * 描述:快速排序，非稳定
+ * 描述:快速排序，非稳定，时间：O(nlogn)，空间：O(nlogn）
  *
  * @author huyong
  * @date 2020-10-14 2:32 下午

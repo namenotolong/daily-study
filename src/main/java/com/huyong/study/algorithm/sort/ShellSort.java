@@ -1,7 +1,7 @@
 package com.huyong.study.algorithm.sort;
 
 /**
- * 描述: 希尔排序（缩小增量排序），非稳定
+ * 描述: 希尔排序（缩小增量排序），非稳定,时间：O(n1.3)，空间：O(1）
  *
  * @author huyong
  * @date 2020-10-15 2:52 下午

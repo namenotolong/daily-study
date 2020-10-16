@@ -4,7 +4,7 @@ import com.huyong.study.algorithm.utils.CommonUtils;
 
 
 /**
- * 描述:堆排序，非稳定
+ * 描述:堆排序，非稳定,时间：O(nlogn)，空间：O(n）
  *
  * @author huyong
  * @date 2020-10-15 11:04 上午

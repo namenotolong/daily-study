@@ -1,7 +1,7 @@
 package com.huyong.study.algorithm.sort;
 
 /**
- * 描述: 基数排序--桶排序，O (nlog(r)m),稳定（针对整型数）
+ * 描述: 基数排序，O (nlog(r)m),稳定（针对整型数）
  *
  * @author huyong
  * @date 2020-10-15 7:27 下午

@@ -1,7 +1,7 @@
 package com.huyong.study.algorithm.sort;
 
 /**
- * 描述: 插入，稳定
+ * 描述: 插入，稳定,时间：O(n*n)，空间：O(1）
  *
  * @author huyong
  * @date 2020-10-14 3:59 下午

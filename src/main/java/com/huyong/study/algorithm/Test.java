@@ -14,35 +14,37 @@ import java.util.Random;
  * @date 2020-10-14 2:12 下午
  */
 public class Test {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
 
-        Sort sort = new RadixSort();
-        int[] arr = {1,2,3,1,2,3,12,13,65,0,0,233,98,10,0,234,1,2,7,8,8,1,2,-12,-56,-99,-1};
+        Sort sort = new BucketSort();
+        int[] arr = {1,2,3,1,2,3,12,13,65,0,0,233,98,10,0,234,1,2,7,8,8,1,2,-2,-1,-99,-11};
         sort.sort(arr);
         System.out.println(Arrays.toString(arr));
         new Test().testSpeed();;
     }
     public void testSpeed() {
-        int[] data = new int[10000 * 1000];
+        int[] data = new int[10000 * 100];
         Random random = new Random();
         for (int i = 0; i < data.length; i++) {
-            data[i] = random.nextInt();
+            data[i] = random.nextInt(10000 * 1);
         }
         int[] data1 = new int[data.length];
         int[] data2 = new int[data.length];
         int[] data3 = new int[data.length];
         int[] data4 = new int[data.length];
         int[] data5 = new int[data.length];
+        int[] data6 = new int[data.length];
         System.arraycopy(data, 0, data1, 0, data.length);
         System.arraycopy(data, 0, data2, 0, data.length);
         System.arraycopy(data, 0, data3, 0, data.length);
         System.arraycopy(data, 0, data4, 0, data.length);
         System.arraycopy(data, 0, data5, 0, data.length);
+        System.arraycopy(data, 0, data6, 0, data.length);
         System.out.println("随机数生成完成");
-        List<Sort> list = Lists.newArrayList(new HeapSort(), new RadixSort(),
+        List<Sort> list = Lists.newArrayList(new HeapSort(), new RadixSort(), new CountSort(), new BucketSort(),
                 new FastSort(), new MergeSort());
-        List<int[]> dataList = Lists.newArrayList(data,data1,data2,data3,data4,data5);
+        List<int[]> dataList = Lists.newArrayList(data,data1,data2,data3,data4,data5,data6);
         for (int i = 0; i < list.size(); i++) {
             Sort sort = list.get(i);
             int[] t = dataList.get(i);
