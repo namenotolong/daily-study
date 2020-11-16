@@ -10,7 +10,6 @@ object WorldCount{
     val context = new SparkContext(conf)
     val rdd = context.textFile(fileName)
     var res = "";
-    rdd.flatMap(e => e.split(" ")).map((_,1)).reduceByKey(_+_).collect.foreach(e => res += e)
-    println(res)
+    rdd.flatMap(e => e.split(" ")).map((_,1)).reduceByKey(_+_).collect
   }
 }
