@@ -4,10 +4,10 @@ class Test {
 
 }
 class SwingType{
-  def  wantLearned(sw : String) = println("兔子已经学会了"+sw)
+  def  wantLearned(sw : String): Unit = println("兔子已经学会了"+sw)
 }
 object swimming{
-  implicit def learningType(s : AminalType) = new SwingType
+  implicit def learningType(s : AminalType): SwingType = new SwingType
 }
 class AminalType
 object AminalType extends  App{
