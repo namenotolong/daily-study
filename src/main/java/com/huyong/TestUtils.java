@@ -1,6 +1,5 @@
 package com.huyong;
 
-import java.util.ArrayList;
 
 public class TestUtils {
     public static void printArgs(String ... args){
@@ -10,5 +9,11 @@ public class TestUtils {
     }
 
     public static void main(String[] args) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (final StackTraceElement stackTraceElement : stackTrace) {
+            System.out.println(stackTraceElement.getClassName() + ","
+            + stackTraceElement.getFileName() + "," + stackTraceElement.getMethodName()
+                    + "," + stackTraceElement.getLineNumber());
+        }
     }
 }
