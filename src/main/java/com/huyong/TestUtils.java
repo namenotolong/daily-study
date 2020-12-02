@@ -28,6 +28,11 @@ public class TestUtils {
             + stackTraceElement.getFileName() + "," + stackTraceElement.getMethodName()
                     + "," + stackTraceElement.getLineNumber());
         }
-        test();
+        //test();
+        testType();
+    }
+
+    public static void testType() {
+        System.out.println(Integer.TYPE);
     }
 }
