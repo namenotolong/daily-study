@@ -5,12 +5,12 @@ object EnumTest extends Enumeration {
 }
 object TestForEnumTest{
   def main(args: Array[String]): Unit = {
-    print(signal(2))
-    print(signal.isDefinedAt(1))
-    print(signal.isDefinedAt(2))
-    print(signal.andThen{x : Int => x * 2 : Int}(2))
+    println(signal(2))
+    println(signal.isDefinedAt(1))
+    println(signal.isDefinedAt(2))
+    println(signal.andThen{x : Int => x * 2 : Int}(2))
     val list = List(1,2,3,4)
-    val result = list collect  {
+    val result = list collect {
       case e: Int => e + 1;
     }
     println(result)
