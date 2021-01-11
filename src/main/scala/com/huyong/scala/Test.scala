@@ -49,7 +49,14 @@ object Test{
     val test = print _
     test(1)
   }
+  def test8(num : Int, str : String): Unit = {
+    println(s"$str get $num")
+  }
+  def test81(str : String): Unit = {
+    val func = test8(8, _)
+    func(str)
+  }
   def main(args: Array[String]): Unit = {
-    test()
+    test81("efsdf")
   }
 }
