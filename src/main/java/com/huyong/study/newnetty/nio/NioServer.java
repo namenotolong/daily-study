@@ -1,7 +1,5 @@
 package com.huyong.study.newnetty.nio;
 
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-
 /**
  * 描述:
  *

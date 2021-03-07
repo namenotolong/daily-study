@@ -11,7 +11,7 @@ public class Test {
         Visitable head = new Head();
         Visitable foot = new Foot();
         Pig pig = new Pig();
-        People people = new People();
+        Visitor people = new People();
         pig.addVisitable(foot);
         pig.addVisitable(head);
         pig.show(people);

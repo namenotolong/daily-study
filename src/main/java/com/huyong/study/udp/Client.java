@@ -20,7 +20,7 @@ public class Client {
             mSocket = new DatagramSocket();
             // 2.创建用于发送消息的DatagramPacket
             InetSocketAddress address = new InetSocketAddress("localhost", 8888);
-            byte[] sendData = ("hello,我是客户端" + (int) (Math.random() * 100)).getBytes();// 随机数模拟不同的客户端
+            byte[] sendData = ("hello,我是客户端" + (int) (Math.random() * 100)).getBytes();
             System.out.println("我发送了" + sendData.length + "字节");
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, address);
             // 3.向服务端发送消息

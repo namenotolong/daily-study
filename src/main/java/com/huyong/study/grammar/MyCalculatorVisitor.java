@@ -41,6 +41,17 @@ public class MyCalculatorVisitor extends CalculatorBaseVisitor<Float> {
     }
 
     @Override
+    public Float visitPower(CalculatorParser.PowerContext ctx) {
+        Float one = ctx.expr(0).accept(this);
+        Float two = ctx.expr(1).accept(this);
+        Float result = 1F;
+        for (int i = 0; i < two; i++) {
+            result *= one;
+        }
+        return result;
+    }
+
+    @Override
     public Float visitFloat(CalculatorParser.FloatContext ctx) {
         return Float.parseFloat(ctx.getText());
     }
