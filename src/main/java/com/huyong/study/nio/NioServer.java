@@ -1,4 +1,4 @@
-package com.huyong.study.bio;
+package com.huyong.study.nio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -8,8 +8,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
-import java.util.Scanner;
 import java.util.Set;
 
 /**
@@ -19,6 +19,12 @@ import java.util.Set;
  * @date 2020-07-19 10:40 下午
  */
 public class NioServer {
+    static ByteBuffer allocate = ByteBuffer.allocate(1024);
+    static ByteBuffer readBuffer = ByteBuffer.allocate(1024);
+    static {
+        allocate.put("hello this is back".getBytes(StandardCharsets.UTF_8));
+        allocate.flip();
+    }
     public static void main(String[] args) throws IOException {
         ServerSocketChannel serverChannel = ServerSocketChannel.open();
         serverChannel.configureBlocking(false);
@@ -40,35 +46,48 @@ public class NioServer {
                     SelectionKey key = iterator.next();
                     iterator.remove();
                     try {
+                        if (!key.isValid()) {
+                            System.out.println("非法");
+                        }
                         if (key.isAcceptable()) {
+                            System.out.println("链接请求来了");
                             SocketChannel client = serverChannel.accept();
                             client.configureBlocking(false);
                             client.register(selector,
                                     SelectionKey.OP_WRITE | SelectionKey.OP_READ, wrap.duplicate());
                             System.out.println("client from" + client);
                         }
-                        if (key.isWritable()) {
-
-                        }
+                        SocketChannel tempChannel = (SocketChannel) key.channel();
                         if (key.isReadable()) {
-                            SocketChannel tempChannel = (SocketChannel) key.channel();
-                            ByteBuffer allocate = ByteBuffer.allocate(1024);
+                            readBuffer.clear();
                             while (true) {
-                                int read = tempChannel.read(allocate);
-                                if (read == 0) {
+                                int read = tempChannel.read(readBuffer);
+                                if (read == -1) {
+                                    //关闭连接
+                                    key.channel().close();
+                                    key.cancel();
+                                }
+                                if (read <= 0) {
                                     break;
                                 }
-                                allocate.flip();
-                                while (allocate.hasRemaining()) {
-                                    System.out.print((char)allocate.get());
+                                readBuffer.flip();
+                                while (readBuffer.hasRemaining()) {
+                                    System.out.print((char)readBuffer.get());
                                 }
-                                allocate.clear();
+                                readBuffer.clear();
                             }
                         }
-                    } catch (Exception e) {
-                        key.cancel();
+                        if (key.isWritable()) {
+                            allocate.clear();
+                            allocate.put("hello this is back".getBytes(StandardCharsets.UTF_8));
+                            allocate.flip();
+                            tempChannel.write(allocate);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                         try {
                             key.channel().close();
+                            key.cancel();
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }

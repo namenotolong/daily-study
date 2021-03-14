@@ -50,32 +50,28 @@ public class IOUtils {
         }
     }
 
+    public static void main(String[] args) throws IOException {
+    }
+
     public static String read(String path) {
-        StringBuilder sb = new StringBuilder();
-        FileInputStream fileInputStream = null;
-        FileChannel channel = null;
         try {
-            fileInputStream = new FileInputStream(path);
-            channel = fileInputStream.getChannel();
-            ByteBuffer allocate = ByteBuffer.allocate(100);
-            try {
-                while (channel.read(allocate) != -1) {
-                    allocate.flip();
-                    while (allocate.hasRemaining()) {
-                        sb.append((char)allocate.get());
-                    }
-                    allocate.clear();
+            RandomAccessFile randomAccessFile =
+                    new RandomAccessFile(path, "rw");
+            FileChannel channel = randomAccessFile.getChannel();
+            ByteBuffer byteBuffer = ByteBuffer.allocate(100);
+            StringBuilder sb = new StringBuilder();
+            while (channel.read(byteBuffer) > 0) {
+                byteBuffer.flip();
+                while (byteBuffer.hasRemaining()) {
+                    sb.append((char) byteBuffer.get());
                 }
-                return sb.toString();
-            } catch (IOException e) {
-                e.printStackTrace();
+                byteBuffer.clear();
             }
-        } catch (FileNotFoundException e) {
+            return sb.toString();
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            close(fileInputStream, channel);
+            return null;
         }
-        return sb.toString();
     }
 
     public static String read(InputStream inputStream) {
