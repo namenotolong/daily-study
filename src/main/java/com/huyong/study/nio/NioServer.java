@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
@@ -37,6 +34,8 @@ public class NioServer {
         while (true) {
             try {
                 int select = selector.select();
+                System.out.println("selector");
+                //selector.selectNow();
                 if (select == 0) {
                     continue;
                 }
@@ -54,11 +53,15 @@ public class NioServer {
                             SocketChannel client = serverChannel.accept();
                             client.configureBlocking(false);
                             client.register(selector,
-                                    SelectionKey.OP_WRITE | SelectionKey.OP_READ, wrap.duplicate());
+                                    SelectionKey.OP_WRITE /*| SelectionKey.OP_READ*/, wrap.duplicate());
                             System.out.println("client from" + client);
                         }
+                        SelectableChannel channel = key.channel();
+                        if (! (channel instanceof SocketChannel)) {
+                            continue;
+                        }
                         SocketChannel tempChannel = (SocketChannel) key.channel();
-                        if (key.isReadable()) {
+                        if (key.isValid() && key.isReadable()) {
                             readBuffer.clear();
                             while (true) {
                                 int read = tempChannel.read(readBuffer);
@@ -66,6 +69,7 @@ public class NioServer {
                                     //关闭连接
                                     key.channel().close();
                                     key.cancel();
+                                    break;
                                 }
                                 if (read <= 0) {
                                     break;
@@ -77,11 +81,12 @@ public class NioServer {
                                 readBuffer.clear();
                             }
                         }
-                        if (key.isWritable()) {
-                            allocate.clear();
+                        if (key.isValid() && key.isWritable()) {
+                            /*allocate.clear();
                             allocate.put("hello this is back".getBytes(StandardCharsets.UTF_8));
                             allocate.flip();
-                            tempChannel.write(allocate);
+                            tempChannel.write(allocate);*/
+                            System.out.println(1);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();

@@ -1,6 +1,8 @@
 package com.huyong.study.netty.learn;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.embedded.EmbeddedChannel;
 
@@ -12,7 +14,8 @@ import io.netty.channel.embedded.EmbeddedChannel;
  */
 public class Test {
     public static void testFrameLength() {
-        ByteBuf buffer = Unpooled.buffer();
+        System.out.println('y');
+        /*ByteBuf buffer = Unpooled.buffer();
         for (int i = 0; i < 9; i++) {
             buffer.writeByte(i);
         }
@@ -28,7 +31,9 @@ public class Test {
         byteBuf.release();
         byteBuf = channel.readInbound();
         System.out.println(buffer.readSlice(3).equals(byteBuf));
-        byteBuf.release();
+        byteBuf.release();*/
+        //ByteBufAllocator.DEFAULT.buffer()
+       // ByteBufUtil.DEFAULT_ALLOCATOR
     }
 
     public static void testEncode() {
@@ -48,6 +53,7 @@ public class Test {
     }
 
     public static void main(String[] args) {
-        testEncode();
+        //testEncode();
+        System.out.println('y' + 1);
     }
 }
