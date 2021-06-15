@@ -1,0 +1,9 @@
+markword classpointer instancedata padding
+markword classpointer length instancedata padding
+8，8（指针压缩后4），4
+不能被8整除则对其
+
+oop：ordinary object pointer
+
+CompressedClassPointers 指针压缩
+UserCompressedOops 属性对象指针压缩

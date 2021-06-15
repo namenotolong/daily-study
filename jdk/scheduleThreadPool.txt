@@ -1,0 +1,14 @@
+threadPool的子类
+
+
+内部ScheduledFutureTask是FutureTask的子类
+Period变量为0标识一次性任务，正数标识固定周期任务，负数标识固定延迟的周期任务
+outerTask周期执行任务的任务
+如果是一次性任务执行就结束，如果是周期性任务执行完成后初始化位点、设置下次执行时间点、将任务添加到队列中
+
+内部使用的时间计算为System.nonoTime()，所以不会受到系统时间改变的影响
+
+使用的队列时内部的DelayedWorkQueue延迟队列
+该队列内部使用数组存储RunnableScheduledFuture数据，初始大小为16，每次扩容50%，内部实现小顶锥
+使用ReentrantLock实现同步
+其中队列的take()方法，如果获取到了元素但是delay>0将会线程等待delay的事件

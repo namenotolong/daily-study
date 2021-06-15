@@ -1,0 +1,37 @@
+Hdfs:分布式文件系统
+文件系统持久性
+NameNode：存储在nameNode本地文件系统中
+使用editLog来记录文件系统元数据的更改
+FsImage存储文件名称空间（块到文件的映射、文件系统的属性）
+检查点：确保文件系统和元数据一致视图
+secondaryNameNode:磁盘读取fsImage、EditLog内容，将EditLog的事务应用于FsImage的内存中，执行完成之后并刷新为新的FsImage(合并此期间nameNode记录的FsImage)
+可以配置给定时间点或者积累到一定的文件事务
+dfs.namenode.checkpoint.period
+dfs.namenode.checkpoint.txns
+
+Blockreport
+dataNode扫描本地文件系统，生成每个本地文件相对应的所有hdfs数据块的列表，上报给nameNode，nameNode从而来优化块分布（如何优化？）
+
+
+通讯协议：基于tcp/ip，NameNode负责接受客户端或者DataNode的Rpc请求，不会主动发起请求
+
+heartBeat && re-replication
+
+
+
+Yarn
+resourceManager(scheduler、applicationManager)、nodeManager、applicationMaster、container
+resourceManager:yarn主节点
+applicatonManager:接受客户端提交的job，判断启动该job的applicationMaster所需资源，监控applicationMaster状态，再其失败时重启applicationMaster
+scheduler:任务调度算法（FIFO Scheduler ，Capacity scheduler，Fair Scheduler）
+nodeManager:集群中的计算节点，抽象本节点信息（cpu、内存、磁盘、网络）并定时向resourceManager的scheduler上报
+container:一组资源集合，一个container一般用来执行一个task
+ApplicationMaster：job的生命周期的管理者，负责整个job执行过程的监控。
+
+
+
+MapReduce
+
+Map个数根据split决定，切分的块个数
+Reduce个数默认是1，但是也可以自己设置
+

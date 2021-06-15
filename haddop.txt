@@ -1,0 +1,59 @@
+Yarn
+基本思想：将资源管理和作业调度/监控拆分为守护进程，ResouceManager负责全局的资源管理，ApplicationMaster负责每一个节点的作业或者作业的DAG。
+ResourceManager(RM):作为全局统一的资源调度、管理、分配。ResourceManager由Scheduler（调度器：本质上是一种策略）和ApplicationManager（应用程序管理器，ASM：负责管理Client用户提交的应用）组成。Scheduler根据节点的容量、队列情况，为Application分配资源；ApplicationManager接受用户提交的请求，在节点中启动Application Master，并监控Application Master的状态、进行必要的重启。
+NodeManager(NM):在每一个节点上都有一个NodeManager作为代理监控节点的资源使用情况（cpu, memory, disk, network）并向Resource Manager上报节点状态。
+ApplicationMaster(AM):负责数据处理job的执行调度。ApplicationMaster与ResourceManager进行沟通，获取资源进行计算。得到资源后，与节点上的NodeManager进行沟通，在分配的Container汇总执行任务，并监控任务执行的情况。（每当 Client 提交一个 Application 时候，就会新建一个 ApplicationMaster 。由这个 ApplicationMaster 去与 ResourceManager 申请容器资源，获得资源后会将要运行的程序发送到容器上启动，然后进行分布式计算。）
+Container:资源的一种抽象方式，它封装了某个节点上的多维度资源，如内存、CPU、磁盘、网络等，当Application Master向Resource Manager申请资源时，Resource Manager为Application Master返回的资源便是Container。
+
+
+MapReduce:
+
+Map:
+1.分片：我们将这一个个block划分成数据分片，即Split（分片，逻辑划分，不包含具体数据，只包含这些数据的位置信息）
+2.数据读取处理：当我们把数据块分好的时候，将这些数据交给用户自定义的Map函数处理。
+
+split,默认对key用hash算法到不同的partition
+map数 == split 数  partition数 == reduce数
+1.一个map指挥处理一个Split    
+2.map处理完的数据会分成不同的partition
+3.一类partition对应一个reduce
+那么一个mr程序中 map的数量是由split的数量决定的，reduce的数量是由partiton的数量决定的。
+
+
+
+Reduce
+在map处理完之后，reduce节点会将各个map节点上属于自己的数据拷贝到内存缓冲区中，最后将数据合并成一个大的数据集，并且按照key值进行聚合，把聚合后的value值作为iterable(迭代器)交给用户使用，这些数据经过用户自定义的reduce函数进行处理之后，同样会以key-value的形式输出出来，默认输出到hdfs上的文件。
+
+
+Shuffle
+
+Map阶段的shuffle
+数据经过用户自定的map函数处理完成之后，数据会放入内存中的环形缓冲区之内，他分为两个部分，数据区和索引区。数据区是存放用户真实的数据，索引区存放数据对应的key值，partition和位置信息。当环形缓冲区数据达到一定的比例后，会将数据溢写到一个文件之中，即途中的spill（溢写）过程。
+
+在溢写前，会将数据根据key和partition进行排序，排好序之后会将数据区的数据按照顺序一个个写入文件之中。这样就能保证文件中数据是按照key和parttition进行排序的。最后会将溢写出的一个个小文件合并成一个大的文件，并且保证在每一个partition中是按照Key值有序的。
+
+总结:
+Collect阶段将数据放进环形缓冲区，缓冲区分为数据区和索引区。
+Sort阶段对在同一partition内的索引按照key排序。
+Spill阶段跟排好序的索引将数据按照顺序写到文件中。
+Merge阶段将Spill生成的小文件分批合并排序成一个大文件。
+
+Reduce阶段的shuffle
+reduce节点会将数据拷贝到自己的buffer缓存区中，当缓存区中的数据达到一定的比例的时候，同样会发生溢写过程，我们任然要保证每一个溢写的文件是有序的。与此同时，后台会启一个线程，将这些小文件合并成一个大文件，经过一轮又一轮的合并，最后将这些文件合并成一个大的数据集。在这个数据集中，数据是有序的，相同的key值对应的value值是挨在一起的。最后，将这些数据交给reduce程序进行聚合处理。
+
+总结：
+1.Copy阶段将Map端的数据分批拷贝到Reduce的缓冲区。
+2.Spill阶段将内存缓存区的数据按顺序写到文件中。
+3.Merge阶段将溢出的文件合并成一个排序的数据集。
+
+
+Combine优化
+Map端：
+1．在数据排序后，溢写到磁盘前，运行combiner。这个时候相同Key值的value值是挨在一起的，可以对这些value值进行一次聚合计算，比如说累加。
+2．溢写出的小文件合并之前，我们也可以执行一次combiner,需要注意的是mr程序默认至少存在三个文件才进行combiner,否则mr会认为这个操作是不值得的。当然这个值可以通过min.num.spills.for.combine设置。
+
+Reduce端：
+和map端一样，在合并溢出文件输出到磁盘之前，运行combiner。
+
+
+为什么mapreduce要排序：MR在reduce阶段需要分组，将key相同的放在一起进行规约，为了达到该目的，有两种算法：hashmap和sort，前者太耗内存，而排序通过外排可对任意数据量分组，只要磁盘够大就行。map端排序是为了减轻reduce端排序的压力。在spark中，除了sort的方法，也提供hashmap，用户可配置，毕竟sort开销太大了。

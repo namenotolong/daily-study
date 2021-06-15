@@ -1,0 +1,56 @@
+AbstractOwnableSynchronizer的子类，含有一个exclusiveOwnerThread变量
+
+提供一个基于FIFO队列，可以构建锁或其他同步装置的基础框架
+
+使用方法：继承它，实现部分方法来管理内部的state
+
+两种模式：共享模式、排它模式
+
+
+字面量：head 队首、tail 队尾、state 同步器状态
+head node的thread、prev为空，不是实际的node节点，初始化队列时会给head赋值
+
+
+Node类是FIFO内容
+waitStatus 节点状态、prev 前驱结点、next 后继节点、thread 入队线程
+nextWaiter 存储condition队列的后继节点，r用来表明节点是共享还是独占
+
+waitStatus
+CANCELLED，值为1，表示当前的线程被取消；
+SIGNAL，值为-1，表示当前节点的后继节点包含的线程需要运行，也就是unpark；
+CONDITION，值为-2，表示当前节点在等待condition，也就是在condition队列中；
+PROPAGATE，值为-3，表示当前场景下后续的acquireShared能够得以执行；
+值为0，表示当前节点在sync队列中，等待着获取锁。
+
+
+
+protected boolean tryAcquire(int arg)	排它的获取这个状态。这个方法的实现需要查询当前状态是否允许获取，然后再进行获取（使用compareAndSetState来做）状态。
+protected boolean tryRelease(int arg) 	释放状态。
+protected int tryAcquireShared(int arg)	共享的模式下获取状态。
+protected boolean tryReleaseShared(int arg)	共享的模式下释放状态。
+
+
+acquire(int arg),独占模式获取锁
+得到锁的pre节点将被设置为头结点，只有当pre==head才能得到锁，没得到锁就会将pre的waitStatus设置为SIGNAL尝试再次获取锁，还没得到则将被park在队列中
+
+释放独占锁
+public final boolean release(int arg)
+释放共享锁
+public final boolean releaseShared(int arg) 
+如果head waitStatus是SIGNAL则unparkSuccessor否则将waitStatus设置为PROPAGATE进行传播
+
+
+conditionObject 内部类
+condition子类
+firstWaiter、lastWaiter，两个节点维护一个condition状态的列表
+
+
+
+框架应用类
+
+1.Semaphore，信号量
+内部Sync，公平队列，非公平队列 tryAcquireShared不判断是否有前驱，直接获取锁 默认实现是非公平sync
+2.CountDownLatch
+3.ReentrantLock
+4.ThreadPoolExecutor中Worker
+

@@ -1,0 +1,11 @@
+ConcurrentLinkedQueue 基于cas的无锁队列，使用对象链表
+LinkedBlockingQueue 基于ReentrantLock的有锁队列，使用对象链表,默认大小为Integer.MAX_VALUE
+ArrayBlockingQueue 基于ReentrantLock的有锁队列，使用数据存储元素
+PriorityBlockingQueue  基于ReentrantLock的有锁队列，使用数据存储元素，内部结构为二叉树
+DelayQueue 基于PriorityQueue（无锁）和ReentrantLock的实现有锁队列，存储内容需实现Delayed接口
+SynchronousQueue 一个生产、消费队列，但是内部并没有容器存储元素，生产、消费无法消费、生产元素时对应线程会堵塞
+内部有两个模型，分别实现方式为队列和栈.
+公平模式：内部使用head、tail实现队列存储元素：插入一个元素被park，poll一个元素unpark元素对应线程，每次都是从head.next取节点
+非公平模式：内部使用栈
+通过使用了SynchronousQueue实现了cacheThreadPool，offer(),poll()不堵塞(线程池获取任务核心线程take 额外poll)，创建了一个核心线程为0，最大线程为Integer.MAX_VALUE的线程池，默认队列实现为非公平
+每次添加任务如果有空闲线程直接运行，否则会加入队列失败，创建一个线程执行

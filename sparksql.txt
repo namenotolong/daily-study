@@ -1,0 +1,31 @@
+JobWaiter是一个JobListener子类，
+变量
+finishedTasks：完成的任务量
+jobPromise：一个promise对象，如果任务数为空直接返回成功的promise，否则是DefaultPromise对象
+方法
+cancel():通过任务的jobID取消这个任务
+taskSucceeded():回调resultHandler，自增完成task，如果都完成，jobPromise.success(())：
+
+
+Promise
+成功直接：KeptPromise
+否则:DefaultPromise->promise、AtomicReference子类
+内部有一个root函数用来获取任务状态：Try子类->Failure、Success
+
+
+LiveListenerBus：事件总线
+
+
+
+eventProcessLoop ： DAGSchedulerEventProcessLoop -> EventLoop
+
+EventLoop:内部通过一个守护线程eventThread处理事件->onReceive
+ eventQueue:事件队列
+ post()加入事件
+
+eventProcessLoop
+ timer:用于metricsSource记录
+ doOnReceive：回调dagScheduler对应方法
+
+事件：DAGSchedulerEvent
+JobSubmitted、MapStageSubmitted、StageCancelled、JobCancelled、JobGroupCancelled、AllJobsCancelled、BeginEvent、GettingResultEvent、CompletionEvent、ExecutorAdded、ExecutorLost、WorkerRemoved、TaskSetFailed、ResubmitFailedStages、SpeculativeTaskSubmitted

@@ -1,0 +1,61 @@
+Scatter 分开 gather 集中，一个缓冲读满之后读下一个
+
+Buffer
+buffer为主动的  read为我要读  write为我要写
+flip：写转读，limit = position position = 0
+Clear():position = 0 limit = capacity,不清数据
+compat()将未读数据覆从position=0开始覆盖，position位置到limit - position即到复制后最后一个值的前一个位置，limit = capacity，和clear都实现了读不到数据
+
+transferTo && transferFrom 都是将数据从一个通道传递到另外一个通道， 可以实现未见的copy，他们的区别是调用的对象是相反的。其中SocketChannel可能不会将所有数据都传输过去，因为他会一直传输，只传输准备好的数据,所以有时需要循环处理。
+
+
+Channel
+
+FileChannel,DatagramChannel,SocketChannel,ServerSocketChannel 
+服务器监听tcp，创造SocketChannel
+
+FileChannel force():写数据时将操作系统缓存的数据一并写入到磁盘，传参为是否将元数据也一并写入
+
+SocketChannel
+
+SocketChannel socketChannel = SocketChannel.open();
+socketChannel.connect(new InetSocketAddress("http://jenkov.com", 80));
+
+ServerSocketChannel serverChannel = ServerSocketChannel.open();
+        serverChannel.configureBlocking(false);
+
+
+Selector
+
+Channel 与 selector一起使用时，channel必须为非堵塞模式，所以fileChannel不可以,它总是运行在堵塞模式下
+
+Channel注册Interest监听的事件key事实上为常亮，1 1<<2 1<<3 1<<4,可以用|进行监听多个事件,也可以用&操作判断某事件是否被注册
+close()会关闭selector，注册的selectionKet无效，但是通道本身不会关闭
+wakeUp()某个线程调用了select()方法堵塞后使用其他线程使用该selector对象该方法会立即wake，如果提前调用了该方法，则下次select()方法也会立即wake
+
+Selector selector = Selector.open();
+channel.configureBlocking(false);
+SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
+while(true) {
+  int readyChannels = selector.select();
+  if(readyChannels == 0) continue;
+  Set selectedKeys = selector.selectedKeys();
+  Iterator keyIterator = selectedKeys.iterator();
+  while(keyIterator.hasNext()) {
+    SelectionKey key = keyIterator.next();
+    if(key.isAcceptable()) {
+        // a connection was accepted by a ServerSocketChannel.
+    } else if (key.isConnectable()) {
+        // a connection was established with a remote server.
+    } else if (key.isReadable()) {
+        // a channel is ready for reading
+    } else if (key.isWritable()) {
+        // a channel is ready for writing
+    }
+    keyIterator.remove();
+  }
+}
+
+
+
+如果包装流没有传递大小参数 则默认最大接受8192大小的数据，需要等待获取输入流进行读取输出

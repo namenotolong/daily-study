@@ -1,0 +1,47 @@
+FutureTask
+任务的一个载体，提供基础的提交、取消任务，获取任务结果等方法
+内部用一个int值标识当前任务装填，0-6标识6个状态
+一个object值存储结果
+一个链表对象存储等待获取结果线程
+get():看任务state，如果不是完成状态就park线程，等待任务完成unpark或者timeout异常抛出
+
+AbstractExecutorService
+提交任务模板类，提供提交任务、invoke唤醒任务方法等
+
+本质生产者消费
+线程池状态  线程池使用一个Integer变量来维护worker（后位）数量和线程池状态（高三位），后面是队列任务数
+从小到大顺序：
+Running 可接受任务
+Shutdown  调用了shuadown，不接受任务，执行完队列里的任务（runWorker判读state>=Stop才中断）
+Stop  一个临界状态值，runWorker中判断状态执行state>=stop，不接受任务，也不处理队列中任务，还会中断执行任务的线程。
+Tidying terminate线程池的一个中间状态，所有任务都终止了，workerCount为0
+Terminated terminated()终止完成
+
+拒绝策略
+AbortPolicy  拒绝抛出异常
+DiscardPolicy  拒绝
+DiscardOldestPolicy   丢弃队列前面的
+callerRunsPolicy   当前线程执行
+
+
+workers是执行任务池
+当worker数量大于核心core数量或者allowCoreThreadTimeOut为true则会触发：keepAliveTime是每个worker的线程拉去任务时的超时时长，单位是毫秒，如果超时后getTask是空，就会被移除worker队列，默认false，如果worker数量少于核心数则会新增一个worker（allowCoreThreadTimeOut不为true）
+
+
+添加任务时
+初始task为worker的第一个任务
+1.总任务数小于core，添加一个worker,addWorker()里面会新建一个thread马上执行该任务
+2.尝试直接将task加入task队列workerQueue，加入后仍要double check（1.线程池状态 2.worker数量，保证至少有一个worker）
+3.最后再尝试加入worker，比较maxNum，成功和第一种情况一致，如果失败就执行拒绝策略。
+
+由于worker继承了aqs，通过state=0和1实现不可重入独占锁，0标识无锁，1有
+在runWorker中之所以要w.lock锁住该worker的不可重入独占锁，是防止被中断
+初始设置state为-1也是防止被中断
+shutdown，中断之前会tryLock,由于state不等于0会获取失败
+shutdownNow()中断不会获取锁直接中断线程
+
+
+
+ExecutorCompletionService 继承了CompletionService
+里面的QueueingFuture继承了FutureTask重写了done方法，一个task任务完成了加入到完成队列中，这样可以获取已经完成了的任务
+

@@ -1,0 +1,34 @@
+堆、方法区、程序计数器（字节码指令，线程私有）、JVM栈（线程私有，描述的是Java方法执行的内存模型，存储局部变量表、操作栈、动态链接、方法出口等）、本地方法栈（线程私有）
+
+
+pmap:查看进程的内存映像信息 report memory map of a process
+常用 pmap -d PID
+Pmap -x PID:显示扩展信息
+可通过该命令查看进程占用虚拟（vsz，Virtual Memory Size（虚拟内存大小））、物理内存（rss，Resident Set Size（常驻内存大小））大小
+
+
+jmap
+
+jmap -heap要在jmap -heap:live之前使用，因为jmap会触发一次FGC，GC后收集到的数据不全
+
+jstat -gcutil pid
+
+
+对象进入老年代的规则：
+大对象直接进入老年代
+长期存活的对象进入老年代，即对象默认经过15次minorGC仍然存活，移入老年代
+当 Survivor 空间中相同年龄所有对象的大小总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，而不需要达到默认的分代年龄
+
+
+1.CPU高
+Top
+P：cpu排序
+top -Hp pid
+pid转16进制 printf %x pid
+jstack -l pid
+
+2.OOM
+排名20的对象
+jmap -histo:live pid | sort -nr -k2 | head -20
+jmap -dump:live,format=b,file=heap.hprof <pid>
+jcmd <pid> GC.heap_dump /home/www/test.dump
