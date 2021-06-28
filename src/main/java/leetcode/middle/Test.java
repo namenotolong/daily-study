@@ -1,11 +1,17 @@
 package leetcode.middle;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author huyong
  */
 public class Test {
     public static void main(String[] args) {
-
+        Test test = new Test();
+        System.out.println(test.lengthOfLongestSubstring("abcabcbb"));
     }
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         ListNode t1 = l1;
@@ -56,7 +62,26 @@ public class Test {
      * 给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度
      */
     public int lengthOfLongestSubstring(String s) {
-        return -1;
+        char[] chars = s.toCharArray();
+        Map<Character, Integer> map = new HashMap<>();
+        int max = 0;
+        int cur = 0;
+        int checkStart = 0;
+        for (int i = 0; i < chars.length; i++) {
+            char item = chars[i];
+            Integer index = map.get(item);
+            if (index == null || index < checkStart) {
+                ++cur;
+                if (cur > max) {
+                    max = cur;
+                }
+            } else {
+                cur = i - index;
+                checkStart = index + 1;
+            }
+            map.put(item, i);
+        }
+        return max;
     }
 }
 
