@@ -1,9 +1,7 @@
 package leetcode.middle;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author huyong
@@ -11,7 +9,7 @@ import java.util.Set;
 public class Test {
     public static void main(String[] args) {
         Test test = new Test();
-        System.out.println(test.lengthOfLongestSubstring("abcabcbb"));
+        System.out.println(test.longestPalindrome("babad"));
     }
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         ListNode t1 = l1;
@@ -82,6 +80,39 @@ public class Test {
             map.put(item, i);
         }
         return max;
+    }
+
+    /**
+     * 给你一个字符串 s，找到 s 中最长的回文子串
+     */
+    public String longestPalindrome(String s) {
+        int leftIndex = 0;
+        int begin = 0;
+        int maxLen = 0;
+        while (leftIndex < s.length()) {
+            int rightIndex = leftIndex;
+            while (rightIndex < s.length()) {
+                if (((rightIndex - leftIndex) > maxLen && isPalindrome(s, leftIndex, rightIndex))) {
+                    maxLen = rightIndex - leftIndex;
+                    begin = leftIndex;
+                }
+                ++rightIndex;
+            }
+            ++leftIndex;
+        }
+        return s.substring(begin, begin + maxLen + 1);
+    }
+
+    public boolean isPalindrome(String s, int start, int end) {
+        if (end < start) {
+            return false;
+        }
+        while (start < end) {
+            if (s.charAt(start++) != s.charAt(end--)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
