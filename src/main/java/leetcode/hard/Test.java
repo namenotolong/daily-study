@@ -8,10 +8,7 @@ import java.util.List;
  */
 public class Test {
     public static void main(String[] args) {
-        int[] nums1 = {2};
-        int[] nums2 = {1};
-        System.out.println(new Test().findMedianSortedArrays2(nums1, nums2));
-        System.out.println(new Test().findMedianSortedArrays(nums1, nums2));
+        Test test = new Test();
     }
 
     public double findMedianSortedArrays2(int[] nums1, int[] nums2) {
