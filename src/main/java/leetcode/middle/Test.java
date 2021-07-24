@@ -266,13 +266,7 @@ public class Test {
         }
         return isMatch(s, p, i, j - 2);
     }
-    public static void main(String[] args) {
-        int[] arr = {-4,-2,-2,-2,0,1,2,2,2,3,3,4,4,6,6};
-        Test test = new Test();
-        test.sort(arr, 0, arr.length - 1);
-        System.out.println(Arrays.toString(arr));
-        System.out.println(test.threeSum(arr));
-    }
+
 
     /**
      * 三个元素 a，b，c ，使得 a + b + c = 0
@@ -317,6 +311,47 @@ public class Test {
         return result;
     }
 
+
+    public static void main(String[] args) {
+        int[] arr = {-4,-2,-2,-2,0,1,2,2,2,3,3,4,4,6,6};
+        Test test = new Test();
+        int[] ints = {1, 1, -1, -1, 3};
+        int i = test.threeSumClosest(ints, -1);
+        System.out.println(i);
+        System.out.println(Arrays.toString(ints));
+    }
+
+    public int threeSumClosest(int[] nums, int target) {
+        if (nums.length < 4) {
+            int result = 0;
+            for (int num : nums) {
+                result += num;
+            }
+            return result;
+        }
+        sort(nums, 0, nums.length - 1);
+        int result = Integer.MAX_VALUE;
+        int resultValue = Integer.MAX_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            int k = i + 1;
+            int j = nums.length - 1;
+            while (k < j) {
+                int temp = nums[i] + nums[k] + nums[j];
+                int abs = Math.abs(temp - target);
+                if (abs < result) {
+                    result = abs;
+                    resultValue = temp;
+                }
+                if (temp > target) {
+                    --j;
+                } else {
+                    ++k;
+                }
+            }
+        }
+        return resultValue;
+    }
+
     public void sort(int[] nums, int start, int end) {
         int i = start, j = end;
         int k = nums[i];
@@ -341,6 +376,201 @@ public class Test {
         if (end > j) {
             sort(nums, j + 1, end);
         }
+    }
+
+    /**
+     * 给定两个整数，被除数 dividend 和除数 divisor。将两数相除，要求不使用乘法、除法和 mod 运算符。
+     */
+    public int divide(int dividend, int divisor) {
+        if (-2147483648 == dividend && divisor == -1) {
+            return 2147483647;
+        }
+        if (-2147483648 == dividend) {
+            return dividend/divisor;
+        }
+        int result = 0;
+        int b = Math.abs(divisor);
+        int a = Math.abs(dividend);
+        if (a < b) {
+            return 0;
+        }
+        int c2 = getLen(b);
+        while (a >= b) {
+            int c1 = getLen(a);
+            int shift = c1 - c2;
+            int value = a >> shift;
+            if (value < b) {
+                --shift;
+            }
+            value = a >> shift;
+            result += 1 << shift;
+            if (shift == 0) {
+                break;
+            }
+            a = ((value << shift) ^ a) + ((value - b) << shift);
+        }
+        if ((dividend ^ divisor) < 0) {
+            return -result;
+        }
+        return result;
+    }
+
+    public int getLen(int a) {
+        int count = 1;
+        while (a > 0) {
+            a >>= 1;
+            if (a > 0) {
+                ++count;
+            }
+        }
+        return count;
+    }
+
+    public int add(int a, int b) {
+        int value1 = a ^ b;
+        int value2 = (a & b) << 1;
+        if (value1 == 0) {
+            return value2;
+        }
+        if (value2 == 0) {
+            return value1;
+        }
+        return add(value1, value2);
+    }
+
+    public String convert(String s, int numRows) {
+        int gap = 2 * numRows - 2;
+        if (gap < 1) {
+            return s;
+        }
+        int init = 0;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < numRows; i++) {
+            int count = 0;
+            int j = i;
+            while (j < s.length() && (gap != 0 || init != 0)) {
+                sb.append(s.charAt(j));
+                ++count;
+                if ((count & 1) == 1 || init == 0) {
+                    if (gap != 0) {
+                        j += gap;
+                    } else {
+                        j += init;
+                    }
+                } else {
+                    j += init;
+                }
+            }
+            gap -= 2;
+            init += 2;
+        }
+        return sb.toString();
+    }
+
+    public int myAtoi(String s) {
+        boolean start = false;
+        boolean off = false;
+        int reduce = '0';
+        boolean valid = true;
+        int result = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (start) {
+                if (c >= '0' && c < 10 + reduce) {
+                    if (result > (Integer.MAX_VALUE - c + reduce) / 10) {
+                        if (off) {
+                            return -Integer.MAX_VALUE - 1;
+                        } else {
+                            return Integer.MAX_VALUE;
+                        }
+                    }
+                    result = result * 10 + c - reduce;
+                    continue;
+                }
+                break;
+            } else {
+                if (c == ' ') {
+                    if (!valid) {
+                        return 0;
+                    }
+                    continue;
+                }
+                if (c == '-') {
+                    if (!valid) {
+                        return 0;
+                    }
+                    off = true;
+                    start = true;
+                    continue;
+                }
+                if (c == '+') {
+                    if (!valid) {
+                        return 0;
+                    }
+                    start = true;
+                    continue;
+                }
+                if (c > '9' || c < '0') {
+                    return 0;
+                }
+                if (c == '0') {
+                    valid = false;
+                    continue;
+                }
+                start = true;
+                result = c - reduce;
+            }
+        }
+        if (off) {
+            return -result;
+        }
+        return result;
+    }
+
+    public int maxArea(int[] height) {
+        if (height.length < 2) {
+            return 0;
+        }
+        int max = 0;
+        int i = 0;
+        int j = height.length - 1;
+        while (i < j) {
+            int area = (j - i) * Math.min(height[i], height[j]);
+            if (max < area) {
+                max = area;
+            }
+            if (height[i] < height[j]) {
+                ++i;
+            } else {
+                --j;
+            }
+        }
+        return max;
+    }
+
+    public String longestCommonPrefix(String[] strs) {
+        if (strs.length < 2) {
+            return strs[0];
+        }
+        String model = strs[0];
+        if (model.length() == 0) {
+            return "";
+        }
+        int max = 0;
+        ok:while (max < model.length()) {
+            String substring = model.substring(0, max + 1);
+            for (int i = 1; i < strs.length; i++) {
+                if (!strs[i].startsWith(substring)) {
+                    break ok;
+                }
+            }
+            ++max;
+        }
+        return model.substring(0, max);
+    }
+
+    public List<String> letterCombinations(String digits) {
+
     }
 }
 
