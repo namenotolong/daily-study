@@ -276,6 +276,10 @@ public class Test {
             return new ArrayList<>();
         }
         sort(nums, 0, nums.length - 1);
+        return threeSortedSum(nums);
+    }
+
+    public List<List<Integer>> threeSortedSum(int[] nums) {
         List<List<Integer>> result = new ArrayList<>();
         int preL = nums[0];
         for (int i = 0; i < nums.length; i++) {
@@ -309,16 +313,6 @@ public class Test {
             }
         }
         return result;
-    }
-
-
-    public static void main(String[] args) {
-        int[] arr = {-4,-2,-2,-2,0,1,2,2,2,3,3,4,4,6,6};
-        Test test = new Test();
-        int[] ints = {1, 1, -1, -1, 3};
-        int i = test.threeSumClosest(ints, -1);
-        System.out.println(i);
-        System.out.println(Arrays.toString(ints));
     }
 
     public int threeSumClosest(int[] nums, int target) {
@@ -569,8 +563,148 @@ public class Test {
         return model.substring(0, max);
     }
 
-    public List<String> letterCombinations(String digits) {
 
+
+    public List<String> letterCombinations(String digits) {
+        if (digits.length() == 0) {
+            return new ArrayList<>();
+        }
+        List<List<String>> list = new ArrayList<>();
+
+        for (int i = 0; i < digits.length(); i++) {
+            List<String> item = new ArrayList<>();
+            switch (digits.charAt(i)) {
+                case '2' :
+                {
+                    item.add("a");
+                    item.add("b");
+                    item.add("c");
+                };break;
+                case '3' :
+                {
+                    item.add("d");
+                    item.add("e");
+                    item.add("f");
+                };break;
+                case '4' :
+                {
+                    item.add("g");
+                    item.add("h");
+                    item.add("i");
+                };break;
+                case '5' :
+                {
+                    item.add("j");
+                    item.add("k");
+                    item.add("l");
+                };break;
+                case '6' :
+                {
+                    item.add("m");
+                    item.add("n");
+                    item.add("o");
+                };break;
+                case '7' :
+                {
+                    item.add("p");
+                    item.add("q");
+                    item.add("r");
+                    item.add("s");
+                };break;
+                case '8' :
+                {
+                    item.add("t");
+                    item.add("u");
+                    item.add("v");
+                };break;
+                case '9' :
+                {
+                    item.add("w");
+                    item.add("x");
+                    item.add("y");
+                    item.add("z");
+                };break;
+                default:break;
+            }
+            list.add(item);
+        }
+        return letterCombinationsTest(list, digits.length() - 1);
+    }
+
+    public List<String> letterCombinationsTest(List<String> left, List<String> right) {
+        List<String> result = new ArrayList<>();
+        for (String s : left) {
+            for (String s1 : right) {
+                result.add(s + s1);
+            }
+        }
+        return result;
+    }
+
+    public List<String> letterCombinationsTest(List<List<String>> list, int right) {
+        if (right == 0) {
+            return list.get(0);
+        }
+        if (right == 1) {
+            return letterCombinationsTest(list.get(0), list.get(1));
+        }
+        return letterCombinationsTest(letterCombinationsTest(list, --right), list.get(right + 1));
+    }
+
+    /**
+     * 给定一个包含n 个整数的数组nums和一个目标值target，
+     * 判断nums中是否存在四个元素 a，b，c和 d，使得a + b + c + d
+     * 的值与target相等？找出所有满足条件且不重复的四元组。
+     */
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        if (nums.length < 4) {
+            return new ArrayList<>();
+        }
+        sort(nums, 0, nums.length - 1);
+        List<List<Integer>> result = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            for (int j = i + 1; j < nums.length - 2; j++) {
+                if (j > i + 1 && nums[j] == nums[j - 1]) {
+                    continue;
+                }
+                int k = j + 1;
+                int l = nums.length - 1;
+                int v = target - nums[i] - nums[j];
+                while (k < l) {
+                    if (k > j + 1 && nums[k] == nums[k - 1]) {
+                        ++k;
+                        continue;
+                    }
+                    int temp = nums[k] + nums[l];
+                    if (temp < v) {
+                        ++k;
+                        continue;
+                    }
+                    if (temp > v) {
+                        --l;
+                        continue;
+                    }
+                    List<Integer> item = new ArrayList<>();
+                    item.add(nums[i]);
+                    item.add(nums[j]);
+                    item.add(nums[k]);
+                    item.add(nums[l]);
+                    result.add(item);
+                    ++k;
+                }
+            }
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {2,2,2,2,2};
+        Test test = new Test();
+        List<List<Integer>> lists = test.fourSum(arr, 8);
+        System.out.println(lists);
     }
 }
 

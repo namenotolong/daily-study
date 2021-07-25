@@ -1,16 +1,15 @@
 package leetcode.easy;
 
-import java.util.Arrays;
+import leetcode.middle.ListNode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author huyong
  */
 public class Test {
-    public static void main(String[] args) {
-        Test test = new Test();
-        System.out.println(test.reverse(120));
-        System.out.println(test.reverse(-1231230));
-    }
+
     /**
      * 给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那 两个 整数，并返回它们的数组下标。
      */
@@ -52,5 +51,59 @@ public class Test {
             }
         }
         return -1;
+    }
+
+    /**
+     * 给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
+     */
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        if (n == 0) {
+            return head;
+        }
+        List<ListNode> list = new ArrayList<>();
+        ListNode temp = head;
+        while (temp != null) {
+            list.add(temp);
+            temp = temp.next;
+        }
+        int size = list.size();
+        int index = size - n;
+        if (index > 0) {
+            list.get(index - 1).next = list.get(index).next;
+            return head;
+        } else {
+            if (list.size() == 1) {
+                return null;
+            }
+            return list.get(1);
+        }
+    }
+
+    public ListNode removeNthFromEnd1(ListNode head, int n) {
+        if (n == 0) {
+            return head;
+        }
+        ListNode k, l, pre;
+        k = l = head;
+        pre = null;
+        int count = 0;
+        while (l.next != null) {
+            l = l.next;
+            if (count >= n) {
+                pre = k;
+                k = k.next;
+            }
+            ++count;
+        }
+        if (pre == null) {
+            return head.next;
+        }
+        pre.next = k.next;
+        return head;
+    }
+
+    public static void main(String[] args) {
+        Test test = new Test();
+
     }
 }
