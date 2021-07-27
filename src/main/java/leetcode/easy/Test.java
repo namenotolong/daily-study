@@ -4,6 +4,7 @@ import leetcode.middle.ListNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * @author huyong
@@ -102,8 +103,173 @@ public class Test {
         return head;
     }
 
+    /**
+     * 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+     */
+    public boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < s.length(); i++) {
+            if (isLeft(s.charAt(i))) {
+                stack.push(s.charAt(i));
+            } else {
+                if (stack.isEmpty()) {
+                    return false;
+                }
+                if (!isEquals(stack.pop(), s.charAt(i))) {
+                    return false;
+                }
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    private boolean isLeft(char c) {
+        return c == '{' || c == '(' || c == '[';
+    }
+
+    private boolean isEquals(char c, char l) {
+        return (c == '{' && l == '}')
+                || (c == '[' && l == ']')
+                || (c == '(' && l == ')');
+    }
+
+    /**
+     * 将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
+     */
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if (l1 == null || l2 == null) {
+            return l1 == null ? l2 : l1;
+        }
+        ListNode item = null;
+        ListNode head = null;
+        while (l1 != null || l2 != null) {
+            ListNode temp;
+            if (l1 == null || l2 == null) {
+                temp = l1 == null ? l2 : l1;
+            } else {
+                temp = l1.val > l2.val ? l2 : l1;
+            }
+            if (temp == l1) {
+                l1 = l1.next;
+            } else {
+                l2 = l2.next;
+            }
+            if (head == null) {
+                head = temp;
+                item = head;
+            } else {
+                item = item.next = temp;
+            }
+        }
+        return head;
+    }
+
+    /**
+     * 数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+     */
+    public List<String> generateParenthesis(int n) {
+        if (n == 0) {
+            return new ArrayList<>();
+        }
+        List<String> list = new ArrayList<>();
+        list.add("(");
+        return test(1, 0, n, list);
+    }
+
+    public List<String> test(int leftCount, int rightCount, int totalN, List<String> list) {
+        if (leftCount == rightCount && leftCount == totalN) {
+            return list;
+        }
+        List<String> list1 = null;
+        List<String> list2 = null;
+        boolean add = rightCount < leftCount;
+        if (add) {
+            list2 = new ArrayList<>();
+        }
+        boolean leftAdd = leftCount < totalN;
+        if (leftAdd) {
+            list1 = new ArrayList<>();
+        }
+        if (!leftAdd && !add) {
+            return list;
+        }
+        for (String s : list) {
+            if (leftAdd) {
+                list1.add(s + "(");
+            }
+            if (add) {
+                list2.add(s + ")");
+            }
+        }
+        int newLeft = leftCount + 1;
+        int newRight = rightCount + 1;
+        if (list1 == null) {
+            return test(leftCount, newRight, totalN, list2);
+        }
+        if (list2 == null) {
+            return test(newLeft, rightCount, totalN, list1);
+        }
+        List<String> left = test(newLeft, rightCount, totalN, list1);
+        left.addAll(test(leftCount, newRight, totalN, list2));
+        return left;
+    }
+
     public static void main(String[] args) {
         Test test = new Test();
+        List<String> list = test.generateParenthesis1(3);
+        System.out.println(list);
+    }
+    public List<String> generateParenthesis1(int n) {
+        List<String> ans = new ArrayList<String>();
+        backtrack(ans, new StringBuilder(), 0, 0, n);
+        return ans;
+    }
+
+    public void backtrack(List<String> ans, StringBuilder cur, int open, int close, int max) {
+        if (cur.length() == max * 2) {
+            ans.add(cur.toString());
+            return;
+        }
+        if (open < max) {
+            cur.append('(');
+            backtrack(ans, cur, open + 1, close, max);
+            cur.deleteCharAt(cur.length() - 1);
+        }
+        if (close < open) {
+            cur.append(')');
+            backtrack(ans, cur, open, close + 1, max);
+            cur.deleteCharAt(cur.length() - 1);
+        }
+    }
+
+    /**
+     * 给你一个链表数组，每个链表都已经按升序排列。
+     * 请你将所有链表合并到一个升序链表中，返回合并后的链表
+     */
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists.length < 2) {
+            return lists[0];
+        }
+        return mergeKLists(lists, 0);
+    }
+
+    public ListNode mergeKLists(ListNode[] lists, int start) {
+        if (lists.length > 2 + start) {
+            return mergeTwo(mergeTwo(lists[start], lists[start + 1]), mergeKLists(lists, start + 2));
+        }
+        if (lists.length - start == 2) {
+            return mergeTwo(lists[start], lists[start + 1]);
+        }
+        return lists[start];
+    }
+    public ListNode mergeTwo(ListNode left, ListNode right) {
+        return mergeTwoLists(left, right);
+    }
+
+    /**
+     * 给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+     */
+    public ListNode swapPairs(ListNode head) {
 
     }
 }
