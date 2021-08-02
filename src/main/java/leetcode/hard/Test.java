@@ -1,15 +1,14 @@
 package leetcode.hard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author huyong
  */
 public class Test {
-    public static void main(String[] args) {
-        Test test = new Test();
-    }
+
 
     public double findMedianSortedArrays2(int[] nums1, int[] nums2) {
         int[] result = new int[nums1.length + nums2.length];
@@ -151,5 +150,177 @@ public class Test {
     public String longestPalindrome(String s) {
 
         return s;
+    }
+
+    /**
+     * 给定一个字符串s和一些 长度相同 的单词words 。
+     * 找出 s 中恰好可以由words 中所有单词串联形成的子串的起始位置。
+     * 注意子串要与words 中的单词完全匹配，中间不能有其他字符 ，
+     * 但不需要考虑words中单词串联的顺序。
+     */
+    public List<Integer> findSubstring(String s, String[] words) {
+        return null;
+    }
+
+
+    /**
+     * 实现获取 下一个排列 的函数，算法需要将给定数字序列重新
+     * 排列成字典序中下一个更大的排列。
+     * 如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
+     * 必须 原地 修改，只允许使用额外常数空间。
+     */
+    public void nextPermutation(int[] nums) {
+        int start = 0;
+        if (nums.length > 2) {
+            for (int i = nums.length - 1; i > 0; i--) {
+                if (nums[i] > nums[i - 1]) {
+                    int k;
+                    for (k = i; k < nums.length && nums[k] > nums[i - 1]; k++) {
+                    }
+                    if (k >= nums.length || nums[k] <= nums[i - 1]) {
+                        --k;
+                    }
+                    int temp = nums[i - 1];
+                    nums[i - 1] = nums[k];
+                    nums[k] = temp;
+
+                    int mid = k;
+                    while (k > i && nums[k] > nums[k - 1]) {
+                        temp = nums[k];
+                        nums[k] = nums[k - 1];
+                        nums[k - 1] = temp;
+                        --k;
+                    }
+                    k = mid;
+                    while (k < nums.length - 1 && nums[k] < nums[k + 1]) {
+                        temp = nums[k];
+                        nums[k] = nums[k + 1];
+                        nums[k + 1] = temp;
+                        ++k;
+                    }
+                    start = i;
+                    break;
+                }
+            }
+        }
+        int j = nums.length - 1;
+        while (start < j) {
+            int temp = nums[start];
+            nums[start] = nums[j];
+            nums[j] = temp;
+            ++start;
+            --j;
+        }
+    }
+
+    /**
+     * 给你一个只包含 '(' 和 ')' 的字符串，找出最长有效（格式正确且连续）括号子串的长度。
+     */
+    public int longestValidParentheses(String s) {
+        int max = 0;
+        int leftCount = 0;
+        int rightCount = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '(') {
+                ++leftCount;
+            } else {
+                ++rightCount;
+            }
+            if (rightCount > leftCount) {
+                leftCount = rightCount = 0;
+            }
+            if (leftCount == rightCount && leftCount > max) {
+                max = leftCount;
+            }
+        }
+        leftCount = rightCount = 0;
+        for (int i = s.length() - 1; i >= 0; i--) {
+            char c = s.charAt(i);
+            if (c == '(') {
+                ++leftCount;
+            } else {
+                ++rightCount;
+            }
+            if (leftCount > rightCount) {
+                leftCount = rightCount = 0;
+            }
+            if (leftCount == rightCount && leftCount > max) {
+                max = leftCount;
+            }
+        }
+        return 2 * max;
+    }
+
+    public static void main(String[] args) {
+        Test test = new Test();
+        int[] ints = {3,1};
+        System.out.println(test.search(ints, 1));
+    }
+
+    public int middleSearch(int[] nums, int target, int start, int end) {
+        while (start <= end) {
+            int mid = (start + end) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            }
+            if (end == start) {
+                return -1;
+            }
+            if (end - start == 1) {
+                if (nums[start] == target) {
+                    return start;
+                }
+                if (nums[end] == target) {
+                    return end;
+                }
+                return -1;
+            }
+            if (nums[mid] > target) {
+                end = mid;
+            } else {
+                start = mid;
+            }
+        }
+        return -1;
+    }
+
+    public int middleSearch2(int[] nums) {
+        if (nums.length < 2) {
+            return 0;
+        }
+        if (nums[0] < nums[nums.length - 1]) {
+            return 0;
+        }
+        int left = 0;
+        int right = nums.length - 1;
+        while (left < right) {
+            if (right - left == 1) {
+                return right;
+            }
+            int mid = (left + right) / 2;
+            if (nums[mid] > nums[0]) {
+                left = mid;
+            } else if (nums[mid] < nums[0]) {
+                if (mid == 0) {
+                    return 0;
+                }
+                if (nums[mid] < nums[mid - 1]) {
+                    return mid;
+                }
+                right = mid;
+            }
+        }
+        return left;
+    }
+
+
+    public int search(int[] nums, int target) {
+        int mid = middleSearch2(nums);
+        int i = middleSearch(nums, target, 0, mid);
+        if (i != -1) {
+            return i;
+        }
+        return middleSearch(nums, target, mid, nums.length - 1);
     }
 }

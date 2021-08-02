@@ -29,7 +29,7 @@ public class Test {
 
     /**
      * 给你一个 32 位的有符号整数 x ，返回将 x 中的数字部分反转后的结果。
-     * 如果反转后整数超过 32 位的有符号整数的范围 [−231,  231 − 1] ，就返回 0。
+     * 如果反转后整数超过 32 位的有符号整数的范围[−231, 231− 1] ，就返回 0。
      * 假设环境不允许存储 64 位整数（有符号或无符号）。
      */
     public int reverse(int x) {
@@ -214,11 +214,7 @@ public class Test {
         return left;
     }
 
-    public static void main(String[] args) {
-        Test test = new Test();
-        List<String> list = test.generateParenthesis1(3);
-        System.out.println(list);
-    }
+
     public List<String> generateParenthesis1(int n) {
         List<String> ans = new ArrayList<String>();
         backtrack(ans, new StringBuilder(), 0, 0, n);
@@ -270,6 +266,148 @@ public class Test {
      * 给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
      */
     public ListNode swapPairs(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        if (head.next == null) {
+            return head;
+        }
+        ListNode pre = null;
+        ListNode cur = head;
+        ListNode result = head.next;
+        int count = 0;
+        while (cur.next != null) {
+            if ((count++ & 1) == 0) {
+                ListNode temp = cur.next;
+                if (pre != null) {
+                    pre.next = temp;
+                }
+                cur.next = cur.next.next;
+                temp.next = cur;
+            } else {
+                pre = cur;
+                cur = cur.next;
+            }
+        }
+        return result;
+    }
 
+    /**
+     * 给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+     */
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode tail;
+        int count = 0;
+        ListNode temp = head;
+        while (temp != null && ++count < k) {
+            temp = temp.next;
+        }
+        if (count == k) {
+            tail = temp;
+        } else {
+            return head;
+        }
+        reverse(head, reverseKGroup(tail.next, k), 1, k);
+        return tail;
+    }
+
+    ListNode result;
+    public ListNode reverse(ListNode head, ListNode pre) {
+        if (head.next == null) {
+            result = head;
+        } else {
+            reverse(head.next, head);
+        }
+        head.next = pre;
+        return result;
+    }
+
+    public void reverse(ListNode head, ListNode pre, int count, int maxCount) {
+        if (head.next == null || count == maxCount) {
+        } else {
+            reverse(head.next, head, ++count, maxCount);
+        }
+        head.next = pre;
+    }
+
+    public ListNode mirror(ListNode head) {
+        return null;
+    }
+
+    /**
+     * 给你一个有序数组 nums ，请你 原地
+     * 删除重复出现的元素，使每个元素 只出现一次 ，返回删除后数组的新长度。
+     */
+    public int removeDuplicates(int[] nums) {
+        int index = 0;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] != nums[index]) {
+                if (index + 1 != i) {
+                    nums[index + 1] = nums[i];
+                }
+                ++index;
+            }
+        }
+        return index + 1;
+    }
+
+    /**
+     * 给你一个数组 nums 和一个值 val，
+     * 你需要 原地 移除所有数值等于 val 的元素，并返回移除后数组的新长度。
+     */
+    public int removeElement(int[] nums, int val) {
+        int index = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != val) {
+                if (index != i) {
+                    nums[index + 1] = nums[i];
+                }
+                ++index;
+            }
+        }
+        return index + 1;
+    }
+
+    /**
+     * 给你两个字符串haystack 和 needle ，请你在 haystack
+     * 字符串中找出 needle 字符串出现的第一个位置（下标从 0 开始）。如果不存在，则返回 -1 。
+     */
+    public int strStr(String haystack, String needle) {
+        if (needle.length() == 0) {
+            return 0;
+        }
+        if (haystack.length() == 0) {
+            return -1;
+        }
+        for (int i = 0; i < haystack.length(); i++) {
+            if (haystack.length() - i < needle.length()) {
+                break;
+            }
+            int j = i;
+            int count = 0;
+            while (count < needle.length() && j < haystack.length() && haystack.charAt(j) == needle.charAt(count)) {
+                ++count;
+                ++j;
+            }
+            if (count == needle.length()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        Test test = new Test();
+        ListNode listNode = new ListNode(1,
+                new ListNode(2,
+                        new ListNode(3,
+                                new ListNode(4,
+                                        new ListNode(5,
+                                                new ListNode(6))))));
+        ListNode listNode1 = test.reverseKGroup(listNode, 3);
+        System.out.println(listNode1);
     }
 }
