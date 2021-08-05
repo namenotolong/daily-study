@@ -252,38 +252,7 @@ public class Test {
         return 2 * max;
     }
 
-    public static void main(String[] args) {
-        Test test = new Test();
-        int[] ints = {3,1};
-        System.out.println(test.search(ints, 1));
-    }
 
-    public int middleSearch(int[] nums, int target, int start, int end) {
-        while (start <= end) {
-            int mid = (start + end) / 2;
-            if (nums[mid] == target) {
-                return mid;
-            }
-            if (end == start) {
-                return -1;
-            }
-            if (end - start == 1) {
-                if (nums[start] == target) {
-                    return start;
-                }
-                if (nums[end] == target) {
-                    return end;
-                }
-                return -1;
-            }
-            if (nums[mid] > target) {
-                end = mid;
-            } else {
-                start = mid;
-            }
-        }
-        return -1;
-    }
 
     public int middleSearch2(int[] nums) {
         if (nums.length < 2) {
@@ -322,5 +291,106 @@ public class Test {
             return i;
         }
         return middleSearch(nums, target, mid, nums.length - 1);
+    }
+
+    public int middleSearch(int[] nums, int target, int start, int end) {
+        if (nums.length < 1) {
+            return -1;
+        }
+        while (start <= end) {
+            int mid = (start + end) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            }
+            if (end == start) {
+                return -1;
+            }
+            if (end - start == 1) {
+                if (nums[start] == target) {
+                    return start;
+                }
+                if (nums[end] == target) {
+                    return end;
+                }
+                return -1;
+            }
+            if (nums[mid] > target) {
+                end = mid;
+            } else {
+                start = mid;
+            }
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        Test test = new Test();
+        int[] ints = {1};
+        System.out.println(test.searchInsert(ints, 0));
+    }
+    public int searchInsert(int[] nums, int target) {
+        if (nums.length < 1) {
+            return 0;
+        }
+        int start = 0;
+        int end = nums.length - 1;
+        while (start <= end) {
+            int mid = (start + end) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            }
+            if (end == start) {
+                if (nums[mid] > target) {
+                    return mid - 1 < 0 ? 0 : mid - 1;
+                } else {
+                    return mid + 1;
+                }
+            }
+            if (end - start == 1) {
+                if (nums[start] == target) {
+                    return start;
+                }
+                if (nums[end] == target) {
+                    return end;
+                }
+                return target > nums[end] ? end + 1 : target > nums[start] ? start + 1 : start - 1 < 0 ? 0 : start - 1 ;
+            }
+            if (nums[mid] > target) {
+                end = mid;
+            } else {
+                start = mid;
+            }
+        }
+        return start;
+    }
+    public int[] searchRange(int[] nums, int target) {
+        int mid = middleSearch(nums, target, 0, nums.length - 1);
+        int[] arr = new int[2];
+        if (mid == -1) {
+            arr[0] = -1;
+            arr[1] = -1;
+            return arr;
+        }
+        int preLeft = mid;
+        int left;
+        while (true) {
+            left = middleSearch(nums, target, 0, preLeft);
+            if (left == preLeft) {
+                break;
+            }
+            preLeft = left;
+        }
+        int preRight = mid;
+        int right;
+        while (true) {
+            right = middleSearch(nums, target, preRight, nums.length);
+            if (right == preRight) {
+                break;
+            }
+            preRight = right;
+        }
+        arr[0] = left;
+        arr[1] = right;
+        return arr;
     }
 }
