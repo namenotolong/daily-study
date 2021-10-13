@@ -34,8 +34,6 @@ public class NioServer {
         while (true) {
             try {
                 int select = selector.select();
-                System.out.println("selector");
-                //selector.selectNow();
                 if (select == 0) {
                     continue;
                 }
@@ -47,13 +45,12 @@ public class NioServer {
                     try {
                         if (!key.isValid()) {
                             System.out.println("非法");
+                            continue;
                         }
                         if (key.isAcceptable()) {
-                            System.out.println("链接请求来了");
                             SocketChannel client = serverChannel.accept();
                             client.configureBlocking(false);
-                            client.register(selector,
-                                    SelectionKey.OP_WRITE /*| SelectionKey.OP_READ*/, wrap.duplicate());
+                            client.register(selector, SelectionKey.OP_WRITE | SelectionKey.OP_READ, wrap.duplicate());
                             System.out.println("client from" + client);
                         }
                         SelectableChannel channel = key.channel();
@@ -63,12 +60,11 @@ public class NioServer {
                         SocketChannel tempChannel = (SocketChannel) key.channel();
                         if (key.isValid() && key.isReadable()) {
                             readBuffer.clear();
+                            System.out.println("into read");
                             while (true) {
                                 int read = tempChannel.read(readBuffer);
                                 if (read == -1) {
                                     //关闭连接
-                                    key.channel().close();
-                                    key.cancel();
                                     break;
                                 }
                                 if (read <= 0) {
@@ -82,11 +78,7 @@ public class NioServer {
                             }
                         }
                         if (key.isValid() && key.isWritable()) {
-                            /*allocate.clear();
-                            allocate.put("hello this is back".getBytes(StandardCharsets.UTF_8));
-                            allocate.flip();
-                            tempChannel.write(allocate);*/
-                            System.out.println(1);
+                            System.out.println("into write");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -98,6 +90,13 @@ public class NioServer {
                         }
                     }
                 }
+
+                Set<SelectionKey> size = selector.selectedKeys();
+                System.out.println(size.size());
+                selector.select();
+                size = selector.selectedKeys();
+                System.out.println(size.size());
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
