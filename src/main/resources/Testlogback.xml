@@ -57,41 +57,12 @@ configuration 子节点为 appender、logger、root
         </encoder>
     </appender>
 
-    <!--将日志输出到logstack-->
-    <!--<appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>47.93.173.81:7002</destination>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <charset>UTF-8</charset>
-        </encoder>
-        <keepAliveDuration>5 minutes</keepAliveDuration>
-    </appender>-->
-
-    <!--这里如果是info，spring、mybatis等框架则不会输出：TRACE < DEBUG < INFO <  WARN < ERROR-->
     <!--root是所有logger的祖先，均继承root，如果某一个自定义的logger没有指定level，就会寻找
     父logger看有没有指定级别，直到找到root。-->
-    <root level="warn">
+    <root level="info">
         <appender-ref ref="stdout"/>
-        <!--<appender-ref ref="infoFile"/>
+        <appender-ref ref="infoFile"/>
         <appender-ref ref="errorFile"/>
-        <appender-ref ref="logstash"/>-->
     </root>
-
-    <!--为某个包单独配置logger
-
-    比如定时任务，写代码的包名为：com.seentao.task
-    步骤如下：
-    1、定义一个appender，取名为task（随意，只要下面logger引用就行了）
-    appender的配置按照需要即可
-
-
-    2、定义一个logger:
-    <logger name="com.seentao.task" level="DEBUG" additivity="false">
-      <appender-ref ref="task" />
-    </logger>
-    注意：additivity必须设置为false，这样只会交给task这个appender，否则其他appender也会打印com.seentao.task里的log信息。
-
-    3、这样，在com.seentao.task的logger就会是上面定义的logger了。
-    private static Logger logger = LoggerFactory.getLogger(Class1.class);
-    -->
 
 </configuration>

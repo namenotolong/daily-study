@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * 描述:
@@ -44,11 +45,10 @@ public class CollectionTest {
     }
 
     public static void testBiMap() {
-        HashBiMap<String, Integer> test = HashBiMap.create();
-        test.put("zhangsan", 12);
-        test.put("lisi", 20);
-        System.out.println(test.get("zhangsan"));
-        System.out.println(test.inverse().get(12));
+        HashBiMap<Integer, Integer> test = HashBiMap.create();
+        test.put(1, 12);
+        test.put(2, 20);
+        test.put(3, 3);
     }
 
     public static void testTable() {
