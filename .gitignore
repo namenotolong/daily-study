@@ -1,0 +1,25 @@
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Intellij
+.idea/
+.vscode/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
+# Maven
+target/
+
+# log
+/log/
+/logs/
+*.log
+
+mars-web/logs/
+mars-web/metastore_db/
+/.metadata/
