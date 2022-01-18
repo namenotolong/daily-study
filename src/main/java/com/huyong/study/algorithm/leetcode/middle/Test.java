@@ -1,9 +1,8 @@
 package com.huyong.study.algorithm.leetcode.middle;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 /**
  * @author huyong
@@ -703,11 +702,272 @@ public class Test {
         return result;
     }
 
+    //36
+    public boolean isValidSudoku(char[][] board) {
+        boolean validSudokuMiddle = isValidSudokuMiddle(board, true);
+        if (!validSudokuMiddle) {
+            return false;
+        }
+        char[][] boardTemp = new char[9][9];
+        for (int i = 0; i < 9; i++) {
+            int startX = i % 3 * 3;
+            int startY = i / 3 * 3;
+            for (int j = 0; j < 9; j++) {
+                int x = j % 3 + startX;
+                int y = j / 3 + startY;
+                boardTemp[i][j] = board[x][y];
+            }
+        }
+        return isValidSudokuMiddle(boardTemp, false);
+    }
+
+    public boolean isValidSudokuMiddle(char[][] board, boolean checkY) {
+        for (int i = 0; i < 9; i++) {
+            int[] arr = new int[10];
+            int[] buff = null;
+            if (checkY) {
+                buff = new int[10];
+            }
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] != '.') {
+                    int temp = board[i][j]-'0';
+                    if (arr[temp] != 0) {
+                        return false;
+                    }
+                    arr[temp] = temp;
+                }
+                if (checkY) {
+                    if (board[j][i] != '.') {
+                        int temp = board[j][i]-'0';
+                        if (buff[temp] != 0) {
+                            return false;
+                        }
+                        buff[temp] = temp;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    //37
+    public void solveSudoku(char[][] board) {
+        solveSudokuReactive(board, 0, 0);
+    }
+    public int[] solveSudokuMiddle(char[][] board, int x, int y) {
+        Set<Integer> exits = new HashSet<>();
+        int startX = x / 3 * 3;
+        int startY = y / 3 * 3;
+        for (int i = 0; i < 9; i++) {
+            if (board[x][i] != '.') {
+                exits.add(board[x][i] - '0');
+            }
+            if (board[i][y] != '.') {
+                exits.add(board[i][y] - '0');
+            }
+            if (board[i % 3 + startX][i / 3 + startY] != '.') {
+                exits.add(board[i % 3 + startX][i / 3 + startY] - '0');
+            }
+        }
+        int size = 9 - exits.size();
+        if (size == 0) {
+            return null;
+        }
+        int[] result = new int[size];
+        int index = 0;
+        for (int i = 1; i < 10; i++) {
+            if (!exits.contains(i)) {
+                result[index++] = i;
+            }
+        }
+        return result;
+    }
+
+    public int[] solveSudokuMiddleNextEmpty(char[][] board, int x, int y) {
+        for (int i = x; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] == '.') {
+                    int[] result = new int[2];
+                    result[0] = i;
+                    result[1] = j;
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean solveSudokuReactive(char[][] board, int startX, int startY) {
+        int[] nextArr = solveSudokuMiddleNextEmpty(board, startX, startY);
+        if (nextArr == null) {
+            return true;
+        }
+        int[] arr = solveSudokuMiddle(board, nextArr[0], nextArr[1]);
+        if (arr == null) {
+            return false;
+        }
+        if (nextArr[1] == 8) {
+            startY = 0;
+            startX = nextArr[0] + 1;
+        } else {
+            startX = nextArr[0];
+            startY = nextArr[1] + 1;
+        }
+        for (int j : arr) {
+            board[nextArr[0]][nextArr[1]] = (char) (j + '0');
+            boolean flag = solveSudokuReactive(board, startX, startY);
+            if (flag) {
+                return true;
+            }
+            board[nextArr[0]][nextArr[1]] = '.';
+        }
+        return false;
+    }
+
+
+    //38. 外观数列
+    public String countAndSay(int n) {
+        String start = "1";
+        for (int i = 1; i < n; i++) {
+            start = countAndSayDesc(start);
+        }
+        return start;
+    }
+    public String countAndSayDesc(String start) {
+        int len = start.length();
+        int index = 0;
+        StringBuilder sb = new StringBuilder();
+        while (index < len) {
+            char c = start.charAt(index);
+            int count = 1;
+            while (++index < len && start.charAt(index) == c) {
+                ++count;
+            }
+            sb.append(count).append(c);
+        }
+        return sb.toString();
+    }
+
+    //39. 组合总和
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+        combinationSumMiddle(result, list, 0, 0, target, candidates);
+        return result;
+    }
+
+    public void combinationSumMiddle(List<List<Integer>> result,
+                                        List<Integer> list, int index, int curSum,
+                                        int target, int[] candidates) {
+        int num = 0;
+        while (true) {
+            int i = num * candidates[index] + curSum;
+            if (i <= target) {
+                for (int j = 0; j < num; j++) {
+                    list.add(candidates[index]);
+                }
+                if (i == target) {
+                    result.add(new ArrayList<>(list));
+                    for (int j = 0; j < num; j++) {
+                        list.remove(list.size() - 1);
+                    }
+                    return;
+                }
+                if (index < candidates.length - 1) {
+                    combinationSumMiddle(result, list, index + 1, i, target, candidates);
+                }
+                for (int j = 0; j < num; j++) {
+                    list.remove(list.size() - 1);
+                }
+                ++num;
+                continue;
+            }
+            return;
+        }
+    }
+
+    //40. 组合总和 II
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+
+        combination2SumMiddle(result, list, 0, 0, target, candidates);
+        return result;
+    }
+
+    public void combination2SumMiddle(List<List<Integer>> result,
+                                     List<Integer> list, int index, int curSum,
+                                     int target, int[] candidates) {
+        int num = 0;
+        while (true) {
+            if (num > 1) {
+                return;
+            }
+            int i = num * candidates[index] + curSum;
+            if (i <= target) {
+                for (int j = 0; j < num; j++) {
+                    list.add(candidates[index]);
+                }
+                if (i == target) {
+                    List<Integer> curList = list.stream().sorted().collect(Collectors.toList());
+                    boolean contain = false;
+                    for (List<Integer> items : result) {
+                        if (items.equals(curList)) {
+                            contain = true;
+                            break;
+                        }
+                    }
+                    if (!contain) {
+                        result.add(curList);
+                    }
+                    for (int j = 0; j < num; j++) {
+                        list.remove(list.size() - 1);
+                    }
+                    return;
+                }
+                if (index < candidates.length - 1) {
+                    combination2SumMiddle(result, list, index + 1, i, target, candidates);
+                }
+                for (int j = 0; j < num; j++) {
+                    list.remove(list.size() - 1);
+                }
+                ++num;
+                continue;
+            }
+            return;
+        }
+    }
+
+    //41. 缺失的第一个正数   利用了数据索引、缺失本身的性质1-n之间
+    public int firstMissingPositive(int[] nums) {
+        boolean hasOne = false;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 1) {
+                hasOne = true;
+            }
+            if (nums[i] < 1 || nums[i] > nums.length) {
+                nums[i] = 1;
+            }
+        }
+        if (!hasOne) {
+            return 1;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            int temp = nums[i] > 0 ? nums[i] : -nums[i];
+            nums[temp - 1] = nums[temp - 1] > 0 ? -nums[temp - 1] : nums[temp - 1];
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > 0) {
+                return i + 1;
+            }
+        }
+        return nums.length + 1;
+    }
+
     public static void main(String[] args) {
-        int[] arr = {2,2,2,2,2};
         Test test = new Test();
-        List<List<Integer>> lists = test.fourSum(arr, 8);
-        System.out.println(lists);
+        int[] arr = {7,8,9,11,12};
+        System.out.println(test.firstMissingPositive(arr));;
     }
 }
 
