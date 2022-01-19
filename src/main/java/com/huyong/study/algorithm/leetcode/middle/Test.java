@@ -964,10 +964,70 @@ public class Test {
         return nums.length + 1;
     }
 
+    //42. 接雨水 DP // stack //双指针  ---- 每个挖槽单独积水 分析
+    public int trap(int[] height) {
+        //return trapMid(height, 0, height.length - 1);
+        int[] left = new int[height.length];
+        int[] right = new int[height.length];
+        int max = 0;
+        for (int i = 0; i < height.length; i++) {
+            if (height[i] > max) {
+                max = height[i];
+            }
+            left[i] = max;
+        }
+        max = 0;
+        for (int i = height.length - 1; i >= 0; i--) {
+            if (height[i] > max) {
+                max = height[i];
+            }
+            right[i] = max;
+        }
+        int sum = 0;
+        for (int i = 0; i < height.length; i++) {
+            int min = left[i] > right[i] ? right[i] : left[i];
+            sum += min - height[i];
+        }
+        return sum;
+    }
+    //每层每层接水 n + m
+    public int trapMid(int[] height, int start, int end) {
+        for (int i = start; i < height.length; i++) {
+            if (height[i] == 0) {
+                ++start;
+            } else {
+                break;
+            }
+        }
+        for (int i = end; i > start; i--) {
+            if (height[i] == 0) {
+                --end;
+            } else {
+                break;
+            }
+        }
+        if (start >= end) {
+            return 0;
+        }
+        int min = height[start] > height[end] ? height[end] : height[start];
+        int sum = 0;
+        for (int i = start; i <= end; i++) {
+            if (i > start && i < end && height[i] < min) {
+                sum += min - height[i];
+            }
+            height[i] -= min;
+            if (height[i] < 0) {
+                height[i] = 0;
+            }
+        }
+        return sum + trapMid(height, start, end);
+    }
+
+
     public static void main(String[] args) {
         Test test = new Test();
-        int[] arr = {7,8,9,11,12};
-        System.out.println(test.firstMissingPositive(arr));;
+        int[] arr = {0,1,0,2,1,0,1,3,2,1,2,1};
+        System.out.println(test.trap(arr));
     }
 }
 
