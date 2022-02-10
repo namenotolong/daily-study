@@ -1,5 +1,7 @@
 package com.huyong.study.algorithm.leetcode.middle;
 
+import com.google.common.collect.Lists;
+
 import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
@@ -1024,10 +1026,218 @@ public class Test {
     }
 
 
+    //1091
+    public int shortestPathBinaryMatrix(int[][] grid) {
+        int[][] arr = new int[grid.length * grid.length][grid.length * grid.length];
+        //生成邻接表
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                int x = i * grid.length + j;
+                for (int k = 0; k < grid.length * grid.length; k++) {
+                    int kx = k / grid.length;
+                    int ky = k % grid.length;
+                    if (kx == i && j == ky) {
+                        arr[x][k] = 0;
+                        continue;
+                    }
+                    if (grid[kx][ky] == 1 || grid[i][j] == 1) {
+                        arr[x][k] = -1;
+                        continue;
+                    }
+                    if (Math.abs(kx - i) > 1 || Math.abs(j - ky) > 1) {
+                        arr[x][k] = -1;
+                    } else {
+                        arr[x][k] = 1;
+                    }
+                }
+            }
+        }
+        //dijkstra
+        Map<Integer, Integer> dijkstra = dijkstra(arr, 0);
+        if (dijkstra.containsKey(arr.length - 1)) {
+            return dijkstra.get(arr.length - 1) + 1;
+        }
+        return -1;
+    }
+
+    public static Map<Integer, Integer> dijkstra(int[][] graph, int startVertex) {
+        Map<Integer, Integer> result = new HashMap<>();
+        Map<Integer, Integer> rest = new HashMap<>();
+        for (int i = 0; i < graph[startVertex].length; i++) {
+            rest.put(i, graph[startVertex][i]);
+        }
+        while (!rest.isEmpty()) {
+            //找出当前最小值
+            int min = Integer.MAX_VALUE;
+            int minValue = Integer.MAX_VALUE;
+            boolean find = false;
+            for (Map.Entry<Integer, Integer> item : rest.entrySet()) {
+                if (item.getValue() >= 0 && item.getValue() < minValue) {
+                    minValue = item.getValue();
+                    min = item.getKey();
+                    find = true;
+                }
+            }
+            if (!find) {
+                return result;
+            }
+            Integer curValue = rest.get(min);
+            result.put(min, curValue);
+            for (int i = 0; i < graph[min].length; i++) {
+                if (graph[min][i] >= 0 && i != min) {
+                    Integer value = rest.get(i);
+                    if (value != null) {
+                        int updateValue = graph[min][i] + curValue;
+                        if (value < 0 || updateValue < value) {
+                            //更新最小值
+                            rest.put(i, updateValue);
+                        }
+                    }
+                }
+            }
+            rest.remove(min);
+        }
+        return result;
+    }
+
+    //43. 字符串相乘
+    public String multiply(String num1, String num2) {
+        if ("0".equals(num1) || "0".equals(num2)) {
+            return "0";
+        }
+        int j = num2.length() - 1;
+        String result = "0";
+        StringBuilder sb = new StringBuilder(num1);
+        while (j >= 0) {
+            String item = multiplyMidAloneMulti(sb.toString(), num2.charAt(j--));
+            result = multiplyMidAdd(item, result);
+            sb.append("0");
+        }
+        return result;
+    }
+
+    public String multiplyMidAdd(String num1, String num2) {
+        if ("0".equals(num1)) {
+            return num2;
+        }
+        if ("0".equals(num2)) {
+            return num1;
+        }
+        int i = num1.length() - 1;
+        int j = num2.length() - 1;
+        int preRest = 0;
+        StringBuilder sb = new StringBuilder();
+        while (i >= 0 && j >= 0) {
+            int temp = num1.charAt(i) + num2.charAt(j) - '0' - '0' + preRest;
+            preRest = temp / 10;
+            sb.append(temp % 10);
+            --i;
+            --j;
+        }
+        while (i >= 0) {
+            int temp = num1.charAt(i) - '0' + preRest;
+            preRest = temp / 10;
+            sb.append(temp % 10);
+            --i;
+        }
+        while (j >= 0) {
+            int temp = num2.charAt(j) - '0' + preRest;
+            preRest = temp / 10;
+            sb.append(temp % 10);
+            --j;
+        }
+        if (preRest != 0) {
+            sb.append(preRest);
+        }
+        return sb.reverse().toString();
+    }
+
+    public String multiplyMidAloneMulti(String num1, char item) {
+        if ('0' == item) {
+            return "0";
+        }
+        int i = num1.length() - 1;
+        int preRest = 0;
+        StringBuilder sb = new StringBuilder();
+        int he = item - '0';
+        while (i >= 0) {
+            int temp = (num1.charAt(i) - '0') * he + preRest;
+            preRest = temp / 10;
+            sb.append(temp % 10);
+            --i;
+        }
+        if (preRest != 0) {
+            sb.append(preRest);
+        }
+        return sb.reverse().toString();
+    }
+
+    //46. 全排列
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();;
+        for (int num : nums) {
+            list.add(num);
+        }
+        Collections.sort(list);
+        permuteMiddleUnique(result, 0, list, new boolean[list.size()], new ArrayList<>());
+        return result;
+    }
+
+    public void permuteMiddle(List<List<Integer>> result, int start, List<Integer> nums) {
+        if (nums.size() == start) {
+            result.add(new ArrayList<>(nums));
+            return;
+        }
+        for (int i = start; i < nums.size(); i++) {
+            Collections.swap(nums, start, i);
+            permuteMiddle(result, start + 1, nums);
+            Collections.swap(nums, start, i);
+        }
+    }
+
+    //47. 全排列 II
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();;
+        for (int num : nums) {
+            list.add(num);
+        }
+        Collections.sort(list);
+        permuteMiddleUnique(result, 0, list, new boolean[list.size()], new ArrayList<>());
+        return result;
+    }
+    public void permuteMiddleUnique(List<List<Integer>> result,
+                                    int start, List<Integer> nums,
+                                    boolean[] flag, List<Integer> cache) {
+        if (nums.size() == start) {
+            result.add(new ArrayList<>(cache));
+            return;
+        }
+        for (int i = 0; i < nums.size(); i++) {
+            if (flag[i] || (i > 0 && nums.get(i).equals(nums.get(i - 1))) && !flag[i - 1]) {
+                continue;
+            }
+            flag[i] = true;
+            cache.add(nums.get(i));
+            permuteMiddleUnique(result, start + 1, nums, flag, cache);
+            flag[i] = false;
+            cache.remove(cache.size() - 1);
+        }
+    }
+
     public static void main(String[] args) {
         Test test = new Test();
-        int[] arr = {0,1,0,2,1,0,1,3,2,1,2,1};
-        System.out.println(test.trap(arr));
+        //int[] arr = {-1, -1, 0, 0, 1, 1, 2};
+        int[] arr = {1,1,2,2};
+        List<List<Integer>> permute = test.permuteUnique(arr);
+        System.out.println(permute.size());
+        Map<List<Integer>, List<List<Integer>>> collect = permute.stream().collect(Collectors.groupingBy(e -> e));
+        collect.forEach((k, v) -> {
+            if (v.size() > 1) {
+                System.out.println(k);
+            }
+        });
     }
 }
 

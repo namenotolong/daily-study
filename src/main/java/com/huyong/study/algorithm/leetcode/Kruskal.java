@@ -178,10 +178,12 @@ public class Kruskal {
         while (!rest.isEmpty()) {
             //找出当前最小值
             int min = Integer.MAX_VALUE;
+            int minValue = Integer.MAX_VALUE;
             boolean find = false;
             for (Map.Entry<Integer, Integer> item : rest.entrySet()) {
-                if (item.getValue() >= 0 && item.getValue() < min) {
+                if (item.getValue() >= 0 && item.getValue() < minValue) {
                     min = item.getKey();
+                    minValue = item.getValue();
                     find = true;
                 }
             }
@@ -207,13 +209,59 @@ public class Kruskal {
         return result;
     }
 
+
+    //KMP 模串下次的偏移量
+    public static int[] getNext(String ps) {
+        char[] p = ps.toCharArray();
+        int[] next = new int[p.length];
+        next[0] = -1;
+        int j = 0;
+        int k = -1;
+        while (j < p.length - 1) {
+            if (k == -1 || p[j] == p[k]) {
+                //next[k + 1] = next[k] + 1
+                next[++j] = ++k;
+            } else {
+                //不相等 以此时计算出的next[i]为起点再次比较（因为前面的已经可以匹配，重置此为该基准）-1为特殊为 特殊判断 每次不相等 都前置位点
+                k = next[k];
+            }
+        }
+        return next;
+    }
+
+    public static int kmp(String str, String findStr) {
+        int i = 0;
+        int j = 0;
+        int[] next = getNext(findStr);
+        while (true) {
+            if (j == findStr.length()) {
+                return i - findStr.length();
+            }
+            if (i == str.length()) {
+                break;
+            }
+            if (str.charAt(i) == findStr.charAt(j)) {
+                ++i;
+                ++j;
+            } else {
+                if (next[j] == -1) {
+                    ++i;
+                    j = 0;
+                } else {
+                    j = next[j];
+                }
+            }
+        }
+        return -1;
+    }
+
     public static void main(String[] args) {
         Kruskal kruskal = new Kruskal();
         List<Edge<String>> edges = kruskal.mockEdge();
         List<Edge<String>> minTree = kruskal.generateMinTree(edges);
-        for (Edge<String> stringEdge : minTree) {
-            System.out.println(stringEdge);
-        }
-        System.out.println(dijkstra(mockArrGraph(), 0));
+        //System.out.println(dijkstra(mockArrGraph(), 0));
+        String test = "abcabb";
+        System.out.println(Arrays.toString(getNext(test)));
+        long a = System.currentTimeMillis();
     }
 }
