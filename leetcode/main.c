@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 void swap(void* a, void* b, int size) {
     void* temp = malloc(sizeof(*a));
@@ -79,6 +80,11 @@ int minEatingSpeed(int* piles, int pilesSize, int h){
 }
 //878
 int nthMagicalNumber(int n, int a, int b){
+
+}
+
+//36
+bool isValidSudoku(char** board, int boardSize, int* boardColSize){
 
 }
 
