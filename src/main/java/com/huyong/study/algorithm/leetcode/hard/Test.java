@@ -1,5 +1,7 @@
 package com.huyong.study.algorithm.leetcode.hard;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -322,11 +324,6 @@ public class Test {
         return -1;
     }
 
-    public static void main(String[] args) {
-        Test test = new Test();
-        int[] ints = {1};
-        System.out.println(test.searchInsert(ints, 0));
-    }
     public int searchInsert(int[] nums, int target) {
         if (nums.length < 1) {
             return 0;
@@ -391,5 +388,104 @@ public class Test {
         arr[0] = left;
         arr[1] = right;
         return arr;
+    }
+
+
+    //44. 通配符匹配
+    public boolean isMatch(String s, String p) {
+        return isMatch(s, p, 0, 0);
+    }
+    public boolean isMatch(String s, String p, int left, int right) {
+        if (s.length() < left + 1) {
+            if (p.length() < right + 1) {
+                return true;
+            }
+            if (p.charAt(right) == '*') {
+                return isMatch(s, p, left, right + 1);
+            }
+            return false;
+        }
+        if (p.length() < right + 1) {
+            return false;
+        }
+        while (left < s.length() && right < p.length()) {
+            char pItem = p.charAt(right);
+            if (pItem == '*') {
+                for (int m = left; m < s.length() + 1; m++) {
+                    boolean flag = isMatch(s, p, m, right + 1);
+                    if (flag) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            if (pItem == '?') {
+                return isMatch(s, p, left + 1, right + 1);
+            }
+            if (pItem != s.charAt(left)) {
+                return false;
+            }
+            ++left;
+            ++right;
+        }
+        return isMatch(s, p, left, right);
+    }
+
+    public boolean isMatchDynamic(String s, String p) {
+        boolean[][] buff = new boolean[s.length() + 1][p.length() + 1];
+        buff[0][0] = true;
+        for (int i = 1; i < p.length() + 1; i++) {
+            if (p.charAt(i - 1) == '*') {
+                buff[0][i] = true;
+            } else {
+                break;
+            }
+        }
+        for (int i = 1; i < buff.length; i++) {
+            for (int j = 1; j < buff[i].length; j++) {
+                if (p.charAt(j - 1) == '*') {
+                    buff[i][j] = buff[i][j - 1] || buff[i - 1][j];
+                } else if (p.charAt(j - 1) == '?' || p.charAt(j - 1) == s.charAt(i - 1)) {
+                    buff[i][j] = buff[i - 1][j - 1];
+                }
+            }
+        }
+        return buff[s.length()][p.length()];
+    }
+
+    public int minPathSum(int[][] grid) {
+        for (int i = 1; i < grid.length; i++) {
+            grid[i][0] = grid[i - 1][0] + grid[i][0];
+        }
+        for (int i = 1; i < grid[0].length; i++) {
+            grid[0][i] = grid[0][i - 1] + grid[0][i];
+        }
+        for (int i = 1; i < grid.length; i++) {
+            for (int j = 1; j < grid[i].length; j++) {
+                int min = grid[i][j - 1] > grid[i - 1][j] ? grid[i - 1][j] : grid[i][j - 1];
+                grid[i][j] = grid[i][j] + min;
+            }
+        }
+        return grid[grid.length - 1][grid[0].length - 1];
+    }
+    //53. 最大子数组和
+    public int maxSubArray(int[] nums) {
+        int curSum = nums[0];
+        int max = curSum;
+        for (int i = 1; i < nums.length; i++) {
+            if (curSum < 0) {
+                curSum = nums[i];
+            } else {
+                curSum += nums[i];
+            }
+            if (curSum > max) {
+                max = curSum;
+            }
+        }
+        return max;
+    }
+    public static void main(String[] args) {
+        int[][] test = {{1,2,3},{4,5,6}};
+        System.out.println(new Test().minPathSum(test));
     }
 }

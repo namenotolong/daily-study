@@ -1,6 +1,7 @@
 package com.huyong.study.algorithm.leetcode.middle;
 
 import com.google.common.collect.Lists;
+import com.huyong.study.algorithm.leetcode.entity.TreeNode;
 
 import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -1225,19 +1226,93 @@ public class Test {
             cache.remove(cache.size() - 1);
         }
     }
+    //50. Pow(x, n)
+    public double myPow(double x, int n) {
+        if (n == 0) {
+            return 1;
+        }
+        if (n == 1) {
+            return x;
+        }
+        if (n == -1) {
+            return 1 / x;
+        }
+        boolean flag = n > 0;
+        boolean dou = (n & 1) == 0;
+        double result;
+        double value = myPow(x, n / 2);
+        if (n > 0) {
+            if (value < x && x > 1) {
+                return 0;
+            }
+        } else {
+            if (value > x && x > 1) {
+                return 0;
+            }
+        }
+
+        if (dou) {
+            result = value * value;
+        } else {
+            if (flag) {
+                result = value * value * x;
+            } else {
+                result = value * value * (1 / x);
+            }
+        }
+        return result;
+    }
+//55
+    public boolean canJump(int[] nums) {
+        boolean[] buff = new boolean[nums.length];
+        buff[0] = true;
+        for (int i = 1; i < nums.length; i++) {
+            for (int j = 0; j < i && !buff[i]; j++) {
+                buff[i] = buff[j] && nums[j] >= i - j;
+            }
+        }
+        System.out.println(Arrays.toString(buff));
+        return buff[nums.length - 1];
+    }
+
+    //61. 旋转链表
+    public ListNode rotateRight(ListNode head, int k) {
+        int length = 1;
+        ListNode temp = head;
+        ListNode tail = null;
+        while (temp != null) {
+            if (temp.next == null) {
+                tail = temp;
+            }
+            temp = temp.next;
+            ++length;
+        }
+        if (length == 0) {
+            return head;
+        }
+        k = k % length;
+        if (k == 0) {
+            return head;
+        }
+        int index = length - k;
+        ListNode parent = head;
+        while (index > 1) {
+            parent = parent.next;
+            --index;
+        }
+        ListNode result = parent.next;
+        parent.next = null;
+        tail.next = head;
+        return result;
+    }
+
+
 
     public static void main(String[] args) {
-        Test test = new Test();
-        //int[] arr = {-1, -1, 0, 0, 1, 1, 2};
-        int[] arr = {1,1,2,2};
-        List<List<Integer>> permute = test.permuteUnique(arr);
-        System.out.println(permute.size());
-        Map<List<Integer>, List<List<Integer>>> collect = permute.stream().collect(Collectors.groupingBy(e -> e));
-        collect.forEach((k, v) -> {
-            if (v.size() > 1) {
-                System.out.println(k);
-            }
-        });
+        int[] arr = {2,3,1,1,4};
+        new Test().canJump(arr);
     }
+
+
 }
 
