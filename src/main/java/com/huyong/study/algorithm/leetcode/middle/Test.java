@@ -1306,11 +1306,238 @@ public class Test {
         return result;
     }
 
+    //62. 不同路径
+    public int uniquePaths(int m, int n) {
+        int[][] buff = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            buff[i][0] = 1;
+        }
+        for (int i = 0; i < n; i++) {
+            buff[0][i] = 1;
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                buff[i][j] = buff[i - 1][j] + buff[i][j - 1];
+            }
+        }
+        return buff[m - 1][n - 1];
+    }
+    public void uniquePathsMiddle(int m, int n, int curM, int curN, int[] value) {
+        if (curM < m) {
+            uniquePathsMiddle(m ,n, curM + 1, curN, value);
+        }
+        if (curN < n) {
+            uniquePathsMiddle(m ,n, curM, curN + 1, value);
+        }
+        if (curM == m && curN == n) {
+            value[0] = ++value[0];
+        }
+    }
+//66 +1
+    public int[] plusOne(int[] digits) {
+        int pre = 1;
+        for (int i = digits.length - 1; i >= 0; i--) {
+            if (pre == 0) {
+                break;
+            }
+            int value = digits[i] + pre;
+            pre = value / 10;
+            digits[i] = value % 10;
+        }
+        if (pre > 0) {
+            int[] digitsResult = new int[digits.length + 1];
+            digitsResult[0] = pre;
+            System.arraycopy(digits, 0, digitsResult, 1, digits.length);
+            return digitsResult;
+        }
+        return digits;
+    }
+//67. 二进制求和
+    public String addBinary(String a, String b) {
+        int last = 0;
+        int i = 0;
+        StringBuilder sb = new StringBuilder();
+        while (i < a.length() || i < b.length()) {
+            int left,right;
+            left = right = 0;
+            if (i < a.length()) {
+                left = a.charAt(a.length() - i - 1) - '0';
+            }
+            if (i < b.length()) {
+                right = b.charAt(b.length() - i - 1) - '0';
+            }
+            int value = left ^ right ^ last;
+            last = (left + right + last) > 1 ? 1 : 0;
+            sb.append(value);
+            ++i;
+        }
+        if (last != 0) {
+            sb.append(last);
+        }
+        return sb.reverse().toString();
+    }
+
+    //75. 颜色分类
+    public void sortColors(int[] nums) {
+        int left,mid,right;
+        left = mid = right = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 0) {
+                left++;
+            } else if (nums[i] == 1) {
+                mid++;
+            } else {
+                right++;
+            }
+        }
+        int index = 0;
+        while (left > 0 || mid > 0 || right > 0) {
+            if (left-- > 0) {
+                nums[index++] = 0;
+            } else if (mid-- > 0) {
+                nums[index++] = 1;
+            } else if (right-- > 0){
+                nums[index++] = 2;
+            }
+        }
+    }
+
+    //70. 爬楼梯
+    public int climbStairs(int n) {
+        if (n == 1) {
+            return 1;
+        }
+        if (n == 2) {
+            return 2;
+        }
+        int left = 1;
+        int right = 2;
+        while (n-- > 2) {
+            int temp = left + right;
+            left = right;
+            right = temp;
+        }
+        return right;
+    }
+
+    //69. x 的平方根
+    public int mySqrt(int x) {
+        long start = 0;
+        long end = x;
+        int resultV = 0;
+        while (start <= end) {
+            long value = (start + end) / 2;
+            long result = value * value;
+            if (result > x) {
+                end = value - 1;
+            } else {
+                resultV = (int)value;
+                start = value + 1;
+            }
+        }
+        return resultV;
+    }
+
+    //77. 组合
+    public List<List<Integer>> combine(int n, int k) {
+        List<Integer> buff = new ArrayList<>();
+        List<List<Integer>> result = new ArrayList<>();
+        combineMiddle(n, k, 1, buff, result);
+        return result;
+    }
+    public void combineMiddle(int n, int k, int start,
+                                             List<Integer> buff, List<List<Integer>> result) {
+        for (int i = start; i <= n; i++) {
+            buff.add(i);
+            if (buff.size() == k) {
+                result.add(new ArrayList<>(buff));
+            }
+            combineMiddle(n, k, i + 1, buff, result);
+            buff.remove(buff.size() - 1);
+        }
+    }
+
+    //88
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int[] arr = new int[m + n];
+        int index = 0;
+        int leftIndex = 0;
+        int rightIndex = 0;
+        while (index < m + n) {
+            int value;
+            if ((leftIndex < m) && ( rightIndex >= n || nums1[leftIndex] < nums2[rightIndex])) {
+                value = nums1[leftIndex];
+                ++leftIndex;
+            } else {
+                value = nums2[rightIndex];
+                ++rightIndex;
+            }
+            arr[index++] = value;
+        }
+        System.arraycopy(arr, 0, nums1, 0, m + n);
+    }
+
+    //92
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        if (head == null) {
+            return null;
+        }
+        int index = 1;
+
+        ListNode startNode = head;
+        ListNode leftEnd = null;
+        ListNode endNode = null;
+        ListNode endNext = null;
+
+        ListNode lastNode = null;
+        ListNode curNode = head;
+        while (true) {
+            if (index < left) {
+                lastNode = curNode;
+                curNode = curNode.next;
+                ++index;
+                continue;
+            }
+            if (index == left) {
+                leftEnd = lastNode;
+                startNode = curNode;
+            } else if (index > right) {
+                endNode = lastNode;
+                endNext = curNode;
+                break;
+            }
+            ListNode next = curNode.next;
+            curNode.next = lastNode;
+            lastNode = curNode;
+            curNode = next;
+            ++index;
+        }
+        startNode.next = endNext;
+        if (leftEnd == null) {
+            return endNode;
+        }
+        leftEnd.next = endNode;
+        return head;
+    }
+
+    //86. 分隔链表
+    public ListNode partition(ListNode head, int x) {
+
+    }
+
 
 
     public static void main(String[] args) {
-        int[] arr = {2,3,1,1,4};
-        new Test().canJump(arr);
+        ListNode t1 = new ListNode(1);
+        ListNode t2 = new ListNode(2);
+        t1.next = t2;
+        ListNode t3 = new ListNode(3);
+        t2.next = t3;
+        ListNode t4 = new ListNode(4);
+        t3.next = t4;
+        t4.next = new ListNode(5);
+        ListNode listNode = new Test().reverseBetween(t1, 2, 4);
+        System.out.println(listNode);
     }
 
 
