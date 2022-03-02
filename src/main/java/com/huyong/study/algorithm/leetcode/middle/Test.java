@@ -1522,11 +1522,114 @@ public class Test {
 
     //86. 分隔链表
     public ListNode partition(ListNode head, int x) {
+        ListNode itemParent = null;
+        ListNode firstTarget = null;
 
+        ListNode item = head;
+
+        ListNode result = head;
+        ListNode lastNode = null;
+        while (item != null) {
+            if (item.val >= x) {
+                if (firstTarget == null) {
+                    firstTarget = item;
+                }
+                lastNode = item;
+                item = item.next;
+            } else {
+                if (itemParent == null) {
+                    result = item;
+                }
+                ListNode next = item.next;
+                if (lastNode != null) {
+                    lastNode.next = next;
+                }
+                if (itemParent != null) {
+                    itemParent.next = item;
+                }
+                itemParent = item;
+                if (firstTarget != null) {
+                    item.next = firstTarget;
+                }
+                item = next;
+            }
+        }
+        return result;
     }
 
+    //58. 最后一个单词的长度
+    public int lengthOfLastWord(String s) {
+        int sum = 0;
+        int index = s.length() - 1;
+        boolean start = false;
+        while (index >= 0) {
+            char item = s.charAt(index--);
+            if (item == ' ') {
+                if (start) {
+                    break;
+                }
+                continue;
+            }
+            start = true;
+            ++sum;
+        }
+        return sum;
+    }
 
+    //100 相同的树
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        if (p == null && q == null) {
+            return true;
+        }
+        if (p == null || q == null) {
+            return false;
+        }
+        if (p.val != q.val) {
+            return false;
+        }
+        return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+    }
 
+    //97交错字符串
+    public boolean isInterleave(String s1, String s2, String s3) {
+        if (s1.length() + s2.length() != s3.length()) {
+            return false;
+        }
+        boolean[] f = new boolean[s2.length() + 1];
+        f[0] = true;
+        for (int i = 0; i < s1.length() + 1; i++) {
+            for (int j = 0; j < s2.length() + 1; j++) {
+                int p = i + j - 1;
+                if (i > 0) {
+                    f[j] = f[j] && s1.charAt(i - 1) == s3.charAt(p);
+                }
+                if (j > 0) {
+                    f[j] = f[j] || (f[j - 1] && s2.charAt(j - 1) == s3.charAt(p));
+                }
+            }
+        }
+        return f[s2.length()];
+    }
+
+    //96
+    public int numTrees(int n) {
+        int[] num = new int[n + 1];
+        num[0] = 1;
+        num[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            int result = 0;
+            for (int j = 0; j < i; j++) {
+                result += (num[j] * num[i - j - 1]);
+            }
+            num[i] = result;
+        }
+        return num[n];
+    }
+
+    //95. 不同的二叉搜索树 II
+    public List<TreeNode> generateTrees(int n) {
+        return null;
+    }
     public static void main(String[] args) {
         ListNode t1 = new ListNode(1);
         ListNode t2 = new ListNode(2);
@@ -1538,6 +1641,8 @@ public class Test {
         t4.next = new ListNode(5);
         ListNode listNode = new Test().reverseBetween(t1, 2, 4);
         System.out.println(listNode);
+        System.out.println(new Test().isInterleave("aabcc", "dbbca", "aadbbcbcac"));
+        System.out.println(new Test().numTrees(3));
     }
 
 
