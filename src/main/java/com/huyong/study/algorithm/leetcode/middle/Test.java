@@ -1,10 +1,10 @@
 package com.huyong.study.algorithm.leetcode.middle;
 
-import com.google.common.collect.Lists;
 import com.huyong.study.algorithm.leetcode.entity.TreeNode;
 
 import java.util.*;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 /**
@@ -1630,19 +1630,450 @@ public class Test {
     public List<TreeNode> generateTrees(int n) {
         return null;
     }
+
+    //56. 合并区间
+    public int[][] merge(int[][] intervals) {
+        if (intervals.length < 2) {
+            return intervals;
+        }
+        mergeSort(intervals, 0, intervals.length);
+        List<int[]> result = new ArrayList<>();
+        int[] pre = intervals[0];
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] <= pre[1]) {
+                int max = pre[1] > intervals[i][1] ? pre[1] : intervals[i][1];
+                pre[1] = max;
+            } else {
+                result.add(pre);
+                pre = intervals[i];
+            }
+        }
+        result.add(pre);
+        int[][] resultArr = new int[result.size()][2];
+        for (int i = 0; i < result.size(); i++) {
+            resultArr[i] = result.get(i);
+        }
+        return resultArr;
+    }
+    public void mergeSort(int[][] intervals, int start, int end) {
+        int i = start;
+        int j = end;
+        int temp = intervals[start][0];
+        while (i < j) {
+            while (i < j && intervals[j][0] > temp) {
+                --j;
+            }
+            while (i < j && intervals[i][0] < temp) {
+                ++i;
+            }
+            if (intervals[i][0] == intervals[j][0] && i < j) {
+                ++i;
+            } else {
+                int[] arr = intervals[i];
+                intervals[i] = intervals[j];
+                intervals[j] = arr;
+            }
+        }
+        if (start < i - 1) {
+            mergeSort(intervals, start, i - 1);
+        }
+        if (end > j + 1) {
+            mergeSort(intervals, j + 1, end);
+        }
+    }
+
+    //76. 最小覆盖子串
+    public String minWindow(String s, String t) {
+        if (s.length() == 0 || t.length() == 0) {
+            return "";
+        }
+        Map<Character, Integer> exists = new HashMap<>();
+        Map<Character, Integer> rest = new HashMap<>();
+        Map<Character, Integer> copy = new HashMap<>();
+        for (char c : t.toCharArray()) {
+            rest.merge(c, 1, Integer::sum);
+            copy.merge(c, 1, Integer::sum);
+        }
+        int i,j;
+        i = j = 0;
+        int start = 0;
+        int end = Integer.MAX_VALUE;
+        while (j < s.length()) {
+            char c = s.charAt(j);
+            Integer value = copy.get(c);
+            if (value == null) {
+                ++j;
+                continue;
+            }
+            exists.merge(c, 1, Integer::sum);
+            Integer restValue = rest.get(c);
+            if (restValue != null) {
+                if (restValue > 1) {
+                    rest.put(c, restValue - 1);
+                } else {
+                    rest.remove(c);
+                }
+            }
+            while (i < j) {
+                char itemChar = s.charAt(i);
+                Integer itemValue = copy.get(itemChar);
+                if (itemValue == null) {
+                    ++i;
+                    continue;
+                }
+                Integer cur = exists.get(itemChar);
+                if (cur > itemValue) {
+                    ++i;
+                    exists.put(itemChar, cur - 1);
+                } else {
+                    break;
+                }
+            }
+            if (rest.isEmpty() && j - i < end - start) {
+                start = i;
+                end = j;
+            }
+            ++j;
+        }
+        if (!rest.isEmpty()) {
+            return "";
+        }
+        return s.substring(start, end + 1);
+    }
+
+    //79. 单词搜索
+    public boolean exist(char[][] board, String word) {
+        if (board.length == 0 || board[0].length == 0) {
+            return false;
+        }
+        boolean[][] cache = new boolean[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                boolean item = existMiddle(board, word, cache, 0, i, j);
+                if (item) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean existMiddle(char[][] board, String word, boolean[][] choose,
+                               int curIndex, int startX, int startY) {
+        if (board[startX][startY] != word.charAt(curIndex)) {
+            return false;
+        }
+        if (curIndex == word.length() - 1) {
+            return true;
+        }
+        choose[startX][startY] = true;
+        if (startX < board.length - 1 && !choose[startX + 1][startY]) {
+            boolean success = existMiddle(board, word, choose, curIndex + 1, startX + 1, startY);
+            if (success) {
+                return true;
+            }
+        }
+        if (startX > 0 && !choose[startX - 1][startY]) {
+            boolean success = existMiddle(board, word, choose, curIndex + 1, startX - 1, startY);
+            if (success) {
+                return true;
+            }
+        }
+        if (startY < board[startX].length - 1 && !choose[startX][startY + 1]) {
+            boolean success = existMiddle(board, word, choose, curIndex + 1, startX, startY + 1);
+            if (success) {
+                return true;
+            }
+        }
+        if (startY > 0 && !choose[startX][startY - 1]) {
+            boolean success = existMiddle(board, word, choose, curIndex + 1, startX, startY - 1);
+            if (success) {
+                return true;
+            }
+        }
+        choose[startX][startY] = false;
+        return false;
+    }
+
+
+    //78. 子集
+    public List<List<Integer>> subsets(int[] nums) {
+        return subsets(nums, nums.length - 1);
+    }
+
+    public List<List<Integer>> subsets(int[] nums, int end) {
+        if (end < 0) {
+            List<List<Integer>> result = new ArrayList<>();
+            result.add(new ArrayList<>());
+            return result;
+        }
+        List<List<Integer>> result = new ArrayList<>();
+        ArrayList<Integer> last = new ArrayList<>();
+        last.add(nums[end]);
+        result.add(last);
+        List<List<Integer>> subsets = subsets(nums, end - 1);
+        result.addAll(subsets);
+        for (List<Integer> subset : subsets) {
+            if (subset.size() > 0) {
+                ArrayList<Integer> items = new ArrayList<>(subset);
+                items.add(nums[end]);
+                result.add(items);
+            }
+        }
+        return result;
+    }
+
+    //124. 二叉树中的最大路径和
+    public int maxPathSum(TreeNode root) {
+        int[] max = new int[1];
+        max[0] = Integer.MIN_VALUE;
+        maxPathSumMiddle(root, max);
+        return max[0];
+    }
+    public int maxPathSumMiddle(TreeNode root, int[] max) {
+        if (root == null) {
+            return 0;
+        } else {
+            int leftMax = Math.max(maxPathSumMiddle(root.left, max), 0);
+            int rightMax = Math.max(maxPathSumMiddle(root.right, max), 0);
+            int cur = root.val + leftMax + rightMax;;
+            if (cur > max[0]) {
+                max[0] = cur;
+            }
+            return root.val + Math.max(leftMax, rightMax);
+        }
+    }
+
+    //101. 对称二叉树
+    public boolean isSymmetric(TreeNode root) {
+        return isSymmetricMiddle(root, root);
+    }
+    public boolean isSymmetricMiddle(TreeNode left, TreeNode right) {
+        if (left == null || null == right) {
+            return left == right;
+        }
+        if (left.val != right.val) {
+            return false;
+        }
+        return isSymmetricMiddle(left.left, right.right) && isSymmetricMiddle(left.right, right.left);
+    }
+
+    //104. 二叉树的最大深度
+    public int maxDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));
+    }
+
+    //94. 二叉树的中序遍历
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        inorderTraversalMiddle(root, result);
+        return result;
+    }
+    public void inorderTraversalMiddle(TreeNode root, List<Integer> result) {
+        if (root != null) {
+            inorderTraversalMiddle(root.left, result);
+            result.add(root.val);
+            inorderTraversalMiddle(root.right, result);
+        }
+    }
+
+    //141. 环形链表
+    public boolean hasCycle(ListNode head) {
+        ListNode one = head;
+        ListNode two = head;
+        while (one != null && two != null) {
+            one = one.next;
+            two = two.next;
+            if (two == null) {
+                return false;
+            }
+            two = two.next;
+            if (one == two) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //136. 只出现一次的数字
+    public int singleNumber(int[] nums) {
+        int result = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            result ^= nums[i];
+        }
+        return result;
+    }
+
+    //114. 二叉树展开为链表
+    public void flatten(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        flattenMiddle(root);
+    }
+
+    public TreeNode flattenMiddle(TreeNode root) {
+        if (root.left == null && root.right == null) {
+            return root;
+        }
+        TreeNode leftTail = null;
+        TreeNode rightTail = null;
+        TreeNode left = root.left;
+        TreeNode right = root.right;
+        if (root.left != null) {
+            leftTail = flattenMiddle(left);
+        }
+        if (root.right != null) {
+            rightTail = flattenMiddle(right);
+        }
+        root.left = null;
+        if (left != null) {
+            root.right = left;
+        }
+        if (leftTail != null) {
+            leftTail.right = right;
+        }
+        return rightTail;
+    }
+
+    //102. 二叉树的层序遍历
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        Queue<TreeNode> queue = new LinkedBlockingQueue<>();
+        int curSize = 1;
+        queue.add(root);
+        List<List<Integer>> result = new ArrayList<>();
+        while (!queue.isEmpty()) {
+            List<Integer> list = new ArrayList<>();
+            int nextSize = 0;
+            for (int i = 0; i < curSize; i++) {
+                TreeNode poll = queue.poll();
+                list.add(poll.val);
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                    ++nextSize;
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                    ++nextSize;
+                }
+            }
+            result.add(list);
+            curSize = nextSize;
+        }
+        return result;
+    }
+
+    //128. 最长连续序列
+    public int longestConsecutive(int[] nums) {
+        if (nums.length == 0) {
+            return 0;
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num : nums) {
+            //初始化
+            map.put(num, num);
+        }
+        for (int num : nums) {
+            //查
+            Integer item = map.get(num - 1);
+            if (item != null) {
+                //并
+                map.put(num, item);
+            }
+        }
+
+        int max = 0;
+        for (Map.Entry<Integer, Integer> item : map.entrySet()) {
+            Integer key = item.getKey();
+            Integer value = item.getValue();
+            //递归并
+            while (true) {
+                Integer newValue = map.get(value);
+                if (!value.equals(newValue)) {
+                    value = newValue;
+                } else {
+                    break;
+                }
+            }
+            map.put(key, value);
+            if (key - value > max) {
+                max = key - value;
+            }
+        }
+        return max + 1;
+    }
+
+    //121. 买卖股票的最佳时机
+    public int maxProfit(int[] prices) {
+        int minValue = prices[0];
+        int result = 0;
+        for (int i = 0; i < prices.length; i++) {
+            if (prices[i] - minValue > result) {
+                result = prices[i] - minValue;
+            }
+            if (prices[i] < minValue) {
+                minValue = prices[i];
+            }
+        }
+        return result;
+    }
+
+    //105. 从前序与中序遍历序列构造二叉树
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        return buildTreeMiddle(preorder, inorder, 0, 0, inorder.length - 1);
+    }
+
+    public TreeNode buildTreeMiddle(int[] preorder, int[] inorder, int leftStart, int rightStart, int rightEnd) {
+        if (leftStart > preorder.length - 1 || rightStart > rightEnd) {
+            return null;
+        }
+        TreeNode root = new TreeNode(preorder[leftStart]);;
+        int rightCount = 0;
+        for (int i = rightStart; i <= rightEnd; i++) {
+            if (inorder[i] == preorder[leftStart]) {
+                break;
+            }
+            ++rightCount;
+        }
+        if (rightCount > 0) {
+            root.left = buildTreeMiddle(preorder, inorder,
+                    leftStart + 1,
+                    rightStart, rightStart + rightCount - 1);
+        }
+        root.right = buildTreeMiddle(preorder, inorder, leftStart + 1 + rightCount,
+                rightStart + rightCount + 1, rightEnd);
+        return root;
+    }
+
+
+    //617. 合并二叉树
+    public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+        if (root1 == null) {
+            return root2;
+        }
+        if (root2 == null) {
+            return root1;
+        }
+        root1.val = root2.val + root1.val;
+        root1.left = mergeTrees(root1.left, root2.left);
+        root1.right = mergeTrees(root1.right, root2.right);
+        return root1;
+    }
+
     public static void main(String[] args) {
-        ListNode t1 = new ListNode(1);
-        ListNode t2 = new ListNode(2);
-        t1.next = t2;
-        ListNode t3 = new ListNode(3);
-        t2.next = t3;
-        ListNode t4 = new ListNode(4);
-        t3.next = t4;
-        t4.next = new ListNode(5);
-        ListNode listNode = new Test().reverseBetween(t1, 2, 4);
-        System.out.println(listNode);
-        System.out.println(new Test().isInterleave("aabcc", "dbbca", "aadbbcbcac"));
-        System.out.println(new Test().numTrees(3));
+
+        int[] pre ={3,9,20,15,7};
+        int[] in = {9,3,15,20,7};
+
+        TreeNode treeNode = new Test().buildTree(pre, in);
+        System.out.println(treeNode);
+
     }
 
 

@@ -3,6 +3,7 @@ package com.huyong.study.concrrent;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.StampedLock;
 
@@ -20,6 +21,8 @@ public class Test {
     private static int Y = 10240;
     private static int X = 10240;
     public static void main(String[] args) throws InterruptedException {
+        Condition condition = lock.newCondition();
+        condition.await();
 
         for (int i = 0; i < 1000; i++) {
             long s = stampedLock.readLock();

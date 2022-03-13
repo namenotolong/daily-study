@@ -14,12 +14,12 @@ public class FastSort implements Sort {
 
     @Override
     public void sort(int[] arr) {
-        sort1(arr, 0, arr.length - 1);
+        sort(arr, 0, arr.length - 1);
     }
 
     public static void main(String[] args) {
         FastSort sort = new FastSort();
-        int[] arr = {5,4,2,1,3,9,8,7,6,4,2,3,4,5,4,3,2,3,34,5,34,34,5,2,3,123,43,5};
+        int[] arr = {2,2,3,1,5,2,4};
         sort.sort(arr);
         System.out.println(Arrays.toString(arr));
     }
