@@ -3,6 +3,7 @@ package com.huyong.study.algorithm.leetcode.middle;
 import com.huyong.study.algorithm.leetcode.entity.TreeNode;
 
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
@@ -2066,13 +2067,175 @@ public class Test {
         return root1;
     }
 
+    public ListNode detectCycle(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        ListNode first = head.next;
+        if (first == null) {
+            return null;
+        }
+        ListNode second = head.next.next;;
+        if (second == null) {
+            return null;
+        }
+        ListNode last = null;
+        while (true) {
+            if (first == null || second == null) {
+                return null;
+            }
+            if (first == second) {
+                last = first;
+                break;
+            }
+            first = first.next;
+            ListNode next = second.next;
+            if (next == null) {
+                return null;
+            }
+            second = second.next.next;
+        }
+        first = head;
+        second = last;
+        while (true) {
+            if (first == second) {
+                return first;
+            }
+            first = first.next;
+            second = second.next;
+        }
+    }
+
+    //543. 二叉树的直径
+    public int diameterOfBinaryTree(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int[] result = new int[1];
+        diameterOfBinaryTreeDepth(root, result);
+        return result[0];
+    }
+    public int diameterOfBinaryTreeDepth(TreeNode root, int[] result) {
+        if (root == null) {
+            return 0;
+        }
+        int right = diameterOfBinaryTreeDepth(root.right, result);
+        int left = diameterOfBinaryTreeDepth(root.left, result);
+        if (left + right > result[0]) {
+            result[0] = left + right;
+        }
+        return Math.max(right, left) + 1;
+    }
+
+    //226. 翻转二叉树
+    public TreeNode invertTree(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        TreeNode left = root.left;
+        root.left = root.right;
+        root.right = left;
+        invertTree(root.left);
+        invertTree(root.right);
+        return root;
+    }
+
+    //283. 移动零
+    public void moveZeroes(int[] nums) {
+        int index = 0;
+        int cur = 0;
+        while (cur < nums.length) {
+            if (nums[cur] != 0) {
+                nums[index++] = nums[cur];
+            }
+            ++cur;
+        }
+        for (int i = index; i < nums.length; i++) {
+            nums[i] = 0;
+        }
+    }
+
+    //448. 找到所有数组中消失的数字
+    public List<Integer> findDisappearedNumbers(int[] nums) {
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == i + 1) {
+                continue;
+            }
+            while (nums[i] != nums[nums[i] - 1]) {
+                int temp = nums[i];
+                nums[i] = nums[temp - 1];
+                nums[temp - 1] = temp;
+            }
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != i) {
+                list.add(i);
+            }
+        }
+        return list;
+    }
+
+    //206. 反转链表
+    public ListNode reverseList(ListNode head) {
+        ListNode pre = null;
+        ListNode cur = head;
+        while (cur != null) {
+            ListNode temp = cur.next;
+            cur.next = pre;
+            pre = cur;
+            cur = temp;
+        }
+        return pre;
+    }
+
+    //236. 二叉树的最近公共祖先
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return null;
+        }
+        TreeNode[] resultTree = new TreeNode[1];
+        lowestCommonAncestorMiddle1(root, p, q, 0, resultTree);
+        return resultTree[0];
+    }
+
+    public int lowestCommonAncestorMiddle1(TreeNode root, TreeNode p, TreeNode q,
+                                           int pre,TreeNode[] resultTree) {
+        int result = pre;
+        if (root == null) {
+            return 0;
+        }
+        if (resultTree[0] != null) {
+            return 0;
+        }
+        if (root.val == p.val) {
+            result += 1;
+        }
+        if (root.val == q.val) {
+            result += 2;
+        }
+        if (root.left != null) {
+            result += lowestCommonAncestorMiddle1(root.left, p, q, pre, resultTree);
+        }
+        if (root.right != null) {
+            result += lowestCommonAncestorMiddle1(root.right, p, q, pre, resultTree);
+        }
+        if (result == 3 && resultTree[0] == null) {
+            resultTree[0] = root;
+        }
+        return result;
+    }
+
+
     public static void main(String[] args) {
 
-        int[] pre ={3,9,20,15,7};
-        int[] in = {9,3,15,20,7};
+        TreeNode treeNode1 = new TreeNode(3);
+        TreeNode treeNode2 = new TreeNode(1);
+        TreeNode treeNode3 = new TreeNode(2);
+        treeNode1.left = treeNode2;
+        treeNode1.right = treeNode3;
 
-        TreeNode treeNode = new Test().buildTree(pre, in);
-        System.out.println(treeNode);
+        System.out.println(new Test().lowestCommonAncestor(treeNode1, treeNode2, treeNode3));
 
     }
 
