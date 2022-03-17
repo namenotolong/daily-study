@@ -2226,6 +2226,91 @@ public class Test {
         return result;
     }
 
+    //160. 相交链表
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        ListNode l1 = headA;
+        ListNode l2 = headB;
+        while (true) {
+            if (l1 == null && l2 == null) {
+                return null;
+            }
+            if (l1 == l2) {
+                return l1;
+            }
+            if (l1 == null) {
+                l1 = headB;
+            } else {
+                l1 = l1.next;
+            }
+            if (l2 == null) {
+                l2 = headA;
+            } else {
+                l2 = l2.next;
+            }
+        }
+    }
+
+    //743. 网络延迟时间
+    public int networkDelayTime(int[][] times, int n, int k) {
+
+        int[][] graph = new int[n + 1][n + 1];
+        for (int[] ints : graph) {
+            Arrays.fill(ints, -1);
+        }
+        Map<Integer, Integer> rest = new HashMap<>();
+        for (int[] time : times) {
+            graph[time[0]][time[1]] = time[2];
+            if (time[0] == k) {
+                rest.put(time[1], time[2]);
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            if (i == k) {
+                continue;
+            }
+            if (!rest.containsKey(i)) {
+                rest.put(i, -1);
+            }
+        }
+
+        int max = 0;
+        while (!rest.isEmpty()) {
+            //找出当前最小值
+            int min = Integer.MAX_VALUE;
+            int minValue = Integer.MAX_VALUE;
+            boolean find = false;
+            for (Map.Entry<Integer, Integer> item : rest.entrySet()) {
+                if (item.getValue() >= 0 && item.getValue() < minValue) {
+                    min = item.getKey();
+                    minValue = item.getValue();
+                    find = true;
+                }
+            }
+            if (!find) {
+                //没找到
+                return -1;
+            }
+            Integer curValue = rest.get(min);
+            if (curValue > max) {
+                max = curValue;
+            }
+            for (int i = 0; i < graph[min].length; i++) {
+                if (graph[min][i] >= 0 && i != min) {
+                    Integer value = rest.get(i);
+                    if (value != null) {
+                        int updateValue = graph[min][i] + curValue;
+                        if (value < 0 || updateValue < value) {
+                            //更新最小值
+                            rest.put(i, updateValue);
+                        }
+                    }
+                }
+            }
+            rest.remove(min);
+        }
+        return max;
+    }
+
 
     public static void main(String[] args) {
 
