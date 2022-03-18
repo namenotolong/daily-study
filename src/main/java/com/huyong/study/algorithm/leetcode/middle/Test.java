@@ -2312,15 +2312,28 @@ public class Test {
     }
 
 
+    //238. 除自身以外数组的乘积
+    public int[] productExceptSelf(int[] nums) {
+        int[] result = new int[nums.length];
+        result[0] = 1;
+        for (int i = 1; i < result.length; i++) {
+            result[i] = result[i - 1] * nums[i - 1];
+        }
+        int value = nums[nums.length - 1];
+        for (int i = result.length - 2; i >= 0; i--) {
+            result[i] *= value;
+            value *= nums[i];
+        }
+        return result;
+    }
+
+
+
     public static void main(String[] args) {
 
-        TreeNode treeNode1 = new TreeNode(3);
-        TreeNode treeNode2 = new TreeNode(1);
-        TreeNode treeNode3 = new TreeNode(2);
-        treeNode1.left = treeNode2;
-        treeNode1.right = treeNode3;
-
-        System.out.println(new Test().lowestCommonAncestor(treeNode1, treeNode2, treeNode3));
+        int[] arr = {1,2,3,4};
+        int[] ints = new Test().productExceptSelf(arr);
+        System.out.println(Arrays.toString(ints));
 
     }
 
