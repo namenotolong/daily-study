@@ -1,14 +1,13 @@
 package com.huyong.study.algorithm.leetcode.middle;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Test1 {
 
     public static void main(String[] args) {
-        System.out.println('2' ^ '2');
+        int[] arr = {1,1,1};
+        System.out.println(new Test1().subarraySum(arr, 2));
     }
 
     //221. 最大正方形
@@ -105,6 +104,59 @@ public class Test1 {
             }
         }
         return ' ';
+    }
+
+    //198. 打家劫舍
+    public int rob(int[] nums) {
+        if (nums.length == 0) {
+            return 0;
+        }
+        int one = nums[0],two = 0,three = nums[0];
+        if (nums.length > 1) {
+            two = Math.max(one, nums[1]);
+            three = Math.max(one, two);
+        }
+        for (int i = 2; i < nums.length; i++) {
+            three = Math.max(one + nums[i], two);
+            one = two;
+            two = three;
+        }
+        return three;
+    }
+
+    //279. 完全平方数
+    public int numSquares(int n) {
+        int[] result = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            int min = Integer.MAX_VALUE;
+            for (int j = 1; j * j <= i; j++) {
+                min = Math.min(min, result[i - j * j]);
+            }
+            result[i] = min + 1;
+        }
+        return result[n];
+    }
+
+    //560. 和为 K 的子数组
+    public int subarraySum(int[] nums, int k) {
+        int[] arr = new int[nums.length];
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            arr[i] = sum;
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        int count = 0;
+        for (int j : arr) {
+            int target = j - k;
+            Integer value = map.get(target);
+            if (value != null) {
+                count += value;
+            }
+            map.merge(j, 1, Integer::sum);
+        }
+        return count;
     }
 
 }
