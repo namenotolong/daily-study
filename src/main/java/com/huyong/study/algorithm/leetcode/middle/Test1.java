@@ -6,8 +6,9 @@ import java.util.Map;
 public class Test1 {
 
     public static void main(String[] args) {
-        int[] arr = {1,1,1};
-        System.out.println(new Test1().subarraySum(arr, 2));
+        int[] arr = {10,9,2,5,3,7,101,18};
+        System.out.println(new Test1().lengthOfLIS1(arr));
+        System.out.println(1 ^ 1);
     }
 
     //221. 最大正方形
@@ -155,6 +156,75 @@ public class Test1 {
                 count += value;
             }
             map.merge(j, 1, Integer::sum);
+        }
+        return count;
+    }
+
+    //300. 最长递增子序列
+    public int lengthOfLIS(int[] nums) {
+        int max = 1;
+        int[] arr = new int[nums.length];
+        arr[0] = 1;
+        for (int i = 1; i < nums.length; i++) {
+            int cur = 1;
+            for (int j = i - 1; j >= 0; j--) {
+                if (nums[i] > nums[j]) {
+                    int temp = arr[j] + 1;
+                    if (temp > cur) {
+                        cur = temp;
+                    }
+                }
+            }
+            arr[i] = cur;
+            if (cur > max) {
+                max = cur;
+            }
+        }
+        return max;
+    }
+
+    public int lengthOfLIS1(int[] nums) {
+        int[] arr = new int[nums.length];
+        int len = 0;
+        arr[len++] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] < arr[len - 1]) {
+                int start = 0;
+                int end = len - 1;
+                while (start <= end) {
+                    int mid = (start + end) >> 1;
+                    if (arr[mid] == nums[i]) {
+                        break;
+                    } else if (arr[mid] < nums[i]){
+                        start = mid + 1;
+                    } else {
+                        if (mid == 0) {
+                            arr[0] = nums[i];
+                            break;
+                        }
+                        if (arr[mid - 1] < nums[i]) {
+                            arr[mid] = nums[i];
+                        } else {
+                            end = mid - 1;
+                        }
+                    }
+                }
+            } else if (nums[i] > arr[len - 1]){
+                arr[len++] = nums[i];
+            }
+        }
+        return len;
+    }
+
+    //461. 汉明距离
+    public int hammingDistance(int x, int y) {
+        int v = x ^ y;
+        int count = 0;
+        while (v > 0) {
+            if ((v & 1) == 1) {
+                ++count;
+            }
+            v >>= 1;
         }
         return count;
     }
