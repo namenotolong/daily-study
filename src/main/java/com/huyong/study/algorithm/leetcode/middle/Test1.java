@@ -5,11 +5,6 @@ import java.util.Map;
 
 public class Test1 {
 
-    public static void main(String[] args) {
-        int[] arr = {10,9,2,5,3,7,101,18};
-        System.out.println(new Test1().lengthOfLIS1(arr));
-        System.out.println(1 ^ 1);
-    }
 
     //221. 最大正方形
     public int maximalSquare(char[][] matrix) {
@@ -229,4 +224,89 @@ public class Test1 {
         return count;
     }
 
+    //287 寻找重复数
+    public int findDuplicate(int[] nums) {
+        int slow,fast;
+        slow = fast = 0;
+        do {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        } while (slow != fast);
+        slow = 0;
+        while (slow != fast) {
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+        return slow;
+    }
+
+    //581. 最短无序连续子数组
+    public int findUnsortedSubarray(int[] nums) {
+        int pre = Integer.MIN_VALUE;
+        int max = Integer.MIN_VALUE;
+        int startIndex = -1;
+        int endIndex = -1;
+        for (int i = 0; i < nums.length; i++) {
+            if (startIndex < 0) {
+                if (nums[i] < pre) {
+                    endIndex = i;
+                    max = pre;
+
+                    int cur = i - 1;
+                    while (cur >= 0 && nums[cur] >= nums[i]) {
+                        --cur;
+                    }
+                    startIndex = cur;
+                }
+            } else {
+                if (nums[i] < max) {
+                    endIndex = i;
+                }
+                if (startIndex > 0 && nums[i] < nums[startIndex - 1]) {
+                    while (startIndex >= 0 && nums[i] < nums[startIndex - 1]) {
+                        --startIndex;
+                    }
+                }
+                max = Math.max(max, nums[i]);
+            }
+            pre = nums[i];
+        }
+        return endIndex - startIndex == 0 ? 0 : endIndex - startIndex + 1;
+    }
+
+    //200. 岛屿数量
+    public int numIslands(char[][] grid) {
+        int count = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == '1') {
+                    ++count;
+                    numIslandsMid(grid, i, j);
+                }
+            }
+        }
+        return count;
+    }
+    public void numIslandsMid(char[][] grid, int x, int y) {
+        grid[x][y] = '0';
+        if (x > 0 && grid[x - 1][y] == '1') {
+            numIslandsMid(grid, x - 1, y);
+        }
+        if (x < grid.length - 1 && grid[x + 1][y] == '1') {
+            numIslandsMid(grid, x + 1, y);
+        }
+        if (y > 0 && grid[x][y - 1] == '1') {
+            numIslandsMid(grid, x, y - 1);
+        }
+        if (y < grid[x].length - 1 && grid[x][y + 1] == '1') {
+            numIslandsMid(grid, x, y + 1);
+        }
+    }
+
+
+    public static void main(String[] args) {
+        int[] arr = {2,6,4,8,10,9,15};
+
+        System.out.println(new Test1().findDuplicate(arr));
+    }
 }
