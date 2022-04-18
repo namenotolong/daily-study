@@ -41,7 +41,16 @@ public class HeartServer {
                 // 允许较小的数据包的发送，降低延迟
                 .childOption(ChannelOption.TCP_NODELAY, true)
 
-                .childHandler(heartServerHandler);
+                .childHandler(new ChannelInitializer<SocketChannel>() {
+
+                    @Override
+                    protected void initChannel(SocketChannel ch) {
+                        ch.pipeline()
+                                //.addLast("server-idle-handle", new IdleStateHandler(0, 0, 20000, TimeUnit.MILLISECONDS))
+                                .addLast("handler", heartServerHandler);
+                    }
+                });
+        ;
         // 绑定端口，并同步等待成功，即启动服务端
         ChannelFuture future = null;
         try {
