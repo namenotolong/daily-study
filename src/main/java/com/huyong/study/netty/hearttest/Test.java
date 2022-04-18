@@ -14,6 +14,7 @@ public class Test {
         while (scanner.hasNextLine()) {
             String s = scanner.nextLine();
             heartClient.sendMsg(s);
+            System.out.println("write info:" + s);
         }
     }
 }

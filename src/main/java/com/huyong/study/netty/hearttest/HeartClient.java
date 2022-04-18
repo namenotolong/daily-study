@@ -1,9 +1,7 @@
 package com.huyong.study.netty.hearttest;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -26,32 +24,43 @@ public class HeartClient {
 
     public void start() {
 
+        HeartClientHandler heartClientHandler = new HeartClientHandler();
+
         NioEventLoopGroup eventExecutors = new NioEventLoopGroup();
 
         bootstrap.group(eventExecutors)
+                // 指定 Channel 为客户端 NioSocketChannel
                 .channel(NioSocketChannel.class)
-                .handler(new LoggingHandler(LogLevel.DEBUG))
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(SocketChannel ch) {
-                        ch.pipeline()
-                                //.addLast("client-idle-handler", new IdleStateHandler(3000, 0, 0, TimeUnit.MILLISECONDS))
-                                .addLast(new HeartClientHandler());
-                    }
-                });
+                // 指定链接服务器的地址
+                .remoteAddress("localhost", 8080)
+                // TCP Keepalive 机制，实现 TCP 层级的心跳保活功能
+                .option(ChannelOption.SO_KEEPALIVE, true)
+                // 允许较小的数据包的发送，降低延迟
+                .option(ChannelOption.TCP_NODELAY, true)
+                .handler(heartClientHandler);
+        // 链接服务器，并异步等待成功，即启动客户端
+        bootstrap.connect().addListener(new ChannelFutureListener() {
+
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                // 连接失败
+                if (!future.isSuccess()) {
+                    logger.error("[start][Netty Client 连接服务器 失败]");
+                    return;
+                }
+                // 连接成功
+                channel = future.channel();
+                logger.info("[start][Netty Client 连接服务器 成功]");
+            }
+        });
     }
 
 
     public void sendMsg(String msg) {
         try {
             if (channel == null) {
-                ChannelFuture connect = bootstrap.connect(new InetSocketAddress(8080));
-                ChannelFuture sync = connect.sync();
-                if (!sync.isSuccess()) {
-                    logger.error("connect remote error");
-                    throw new RuntimeException("channel connect error");
-                }
-                channel = sync.channel();
+                logger.error("connect remote error");
+                return;
             }
             channel.writeAndFlush(msg);
         } catch (Exception e) {
