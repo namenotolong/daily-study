@@ -25,6 +25,10 @@ public class Test {
     }
 
     public static void main(String[] args) throws InterruptedException, IOException, URISyntaxException {
+        String[] a = new String[2];
+        Object[] b = a;
+        a[0] = "hi";
+        b[1] = 42;
         System.out.println(Son.age);
         String s = new String();
         System.out.println(s);

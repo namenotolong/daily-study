@@ -17,6 +17,7 @@ import java.util.List;
  * @date 2020-10-13 5:23 下午
  */
 public class Test {
+
     public static void main(String[] args) {
         String query = "3.1 * (6.3 - 4.51) + 1 + 5 * 4";
         String query2 = "4^4";
