@@ -122,6 +122,84 @@ public class Test1 {
         return three;
     }
 
+    public int ro2(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        int length = nums.length;
+        if (length == 1) {
+            return nums[0];
+        }
+        int first = nums[0], second = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < length; i++) {
+            int temp = second;
+            second = Math.max(first + nums[i], second);
+            first = temp;
+        }
+        return second;
+    }
+    //213 打家劫舍 II
+    public int rob2(int[] nums) {
+        if (nums.length == 0) {
+            return 0;
+        }
+        int one = nums[0],two = 0;
+        if (nums.length == 1) {
+            return one;
+        }
+        int a = 0;
+        int first = nums[0], second = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < nums.length - 1; i++) {
+            int temp = second;
+            second = Math.max(first + nums[i], second);
+            first = temp;
+        }
+        a = second;
+
+        first = nums[1];
+        int b = first;
+        if (nums.length > 2) {
+            b = Math.max(b, nums[2]);
+        }
+
+        for (int i = 3; i < nums.length; i++) {
+            int temp = b;
+            b = Math.max(first + nums[i], b);
+            first = temp;
+        }
+
+        return Math.max(a,b);
+    }
+
+    //337 打家劫舍 III
+    Map<TreeNode, Integer> map = new HashMap<>();
+    public int rob(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        Integer integer = map.get(root);
+        if (integer != null) {
+            return integer;
+        }
+        TreeNode left = root.left;
+        TreeNode right = root.right;
+        int one = root.val;
+        int two = 0;
+        if (left != null) {
+            one += rob(left.left) + rob((left.right));
+            two += rob(left);
+        }
+        if (right != null) {
+            one += rob(right.left) + rob((right.right));
+            two += rob(right);
+        }
+        int result = Math.max(one, two);
+        map.put(root, result);
+        return result;
+    }
+
+
+
     //279. 完全平方数
     public int numSquares(int n) {
         int[] result = new int[n + 1];
@@ -463,6 +541,21 @@ public class Test1 {
         return root;
     }
 
+    public int coinChang2e(int[] coins, int amount) {
+        int max = amount + 1;
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, max);
+        dp[0] = 0;
+        for (int i = 1; i <= amount; i++) {
+            for (int j = 0; j < coins.length; j++) {
+                if (coins[j] <= i) {
+                    dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
+                }
+            }
+        }
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+
     //322. 零钱兑换
     public int coinChange(int[] coins, int amount) {
         int[][] cache = new int[coins.length + 1][amount + 1];
@@ -530,13 +623,18 @@ public class Test1 {
         return cache[coins.length][amount];
     }
 
+    //494. 目标和
+    public int findTargetSumWays(int[] nums, int target) {
+        return 0;
+    }
+
     public static void main(String[] args) {
         Test1 test1 = new Test1();
 
-        int[] arr = {2,5,10,1};
-        int i = test1.coinChange(arr, 27);
-        System.out.println(i);
-
+        int[] arr = {2,7,9,3,1};
 
     }
+
+
+
 }
