@@ -3,6 +3,7 @@ package com.huyong.study.algorithm.leetcode.easy;
 import com.huyong.study.algorithm.leetcode.middle.ListNode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -399,26 +400,6 @@ public class Test {
         return -1;
     }
 
-    public static void main(String[] args) {
-        Test test = new Test();
-        ListNode listNode = new ListNode(1,
-                new ListNode(2,
-                        new ListNode(3,
-                                new ListNode(4,
-                                        new ListNode(5,
-                                                new ListNode(6))))));
-        ListNode listNode1 = test.reverseKGroup(listNode, 3);
-        System.out.println(listNode1);
-
-
-        int i = test.nthMagicalNumber(123, 2, 3);
-        System.out.println(i);
-    }
-
-
-
-
-
 
 
     //878 如果正整数可以被 A 或 B 整除，那么它是神奇的。
@@ -449,5 +430,26 @@ public class Test {
             throw new RuntimeException("吃不完");
         }
         return 0;
+    }
+
+
+    public int[] countBits(int n) {
+        int[] arr = new int[n + 1];
+        int count = 0;
+        int next = 1;
+        for (int i = 1; i <= n; i++) {
+            arr[i] = 1 + arr[i - (1 << count)];
+            if (i == next) {
+                ++count;
+                next = 1 + next * 2;
+            }
+        }
+        return arr;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(1 << 1);
+        int[] ints = new Test().countBits(8);
+        System.out.println(Arrays.toString(ints));
     }
 }
