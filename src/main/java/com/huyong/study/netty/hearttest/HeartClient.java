@@ -1,10 +1,13 @@
 package com.huyong.study.netty.hearttest;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -37,7 +40,16 @@ public class HeartClient {
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 // 允许较小的数据包的发送，降低延迟
                 .option(ChannelOption.TCP_NODELAY, true)
-                .handler(heartClientHandler);
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    public void initChannel(SocketChannel ch) {
+                        ch.pipeline()
+                                //.addLast("client-idle-handler", new IdleStateHandler(3000, 0, 0, TimeUnit.MILLISECONDS))
+                                .addLast("encoder", new StringEncoder())
+                                .addLast("decoder", new StringDecoder())
+                                .addLast(heartClientHandler);
+                    }
+                });
         // 链接服务器，并异步等待成功，即启动客户端
         bootstrap.connect().addListener(new ChannelFutureListener() {
 
@@ -62,7 +74,10 @@ public class HeartClient {
                 logger.error("connect remote error");
                 return;
             }
-            channel.writeAndFlush(msg);
+            ChannelFuture channelFuture = channel.writeAndFlush(msg);
+            System.out.println(channelFuture.isSuccess());
+            channelFuture.sync();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

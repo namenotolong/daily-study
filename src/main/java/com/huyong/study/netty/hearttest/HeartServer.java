@@ -7,6 +7,8 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
@@ -47,6 +49,8 @@ public class HeartServer {
                     protected void initChannel(SocketChannel ch) {
                         ch.pipeline()
                                 //.addLast("server-idle-handle", new IdleStateHandler(0, 0, 20000, TimeUnit.MILLISECONDS))
+                                .addLast("encoder", new StringEncoder())
+                                .addLast("decoder", new StringDecoder())
                                 .addLast("handler", heartServerHandler);
                     }
                 });
