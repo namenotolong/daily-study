@@ -1,5 +1,6 @@
 package com.huyong.study.netty.hearttest;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -9,7 +10,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author huyong
  */
-
+@ChannelHandler.Sharable
 public class HeartServerHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(HeartServerHandler.class);
@@ -35,6 +36,7 @@ public class HeartServerHandler extends ChannelInboundHandlerAdapter {
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             logger.debug("from server IdleStateEvent triggered, send heartbeat to channel " + ctx.channel());
+            ctx.channel().close();
         } else {
             super.userEventTriggered(ctx, evt);
         }

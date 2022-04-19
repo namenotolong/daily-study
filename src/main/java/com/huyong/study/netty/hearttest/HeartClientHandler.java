@@ -31,6 +31,7 @@ public class HeartClientHandler extends ChannelInboundHandlerAdapter {
 
         if (evt instanceof IdleStateEvent) {
             logger.debug("from client send heart beat msg...");
+            ctx.channel().writeAndFlush("hear beat");
         } else {
             super.userEventTriggered(ctx, evt);
         }

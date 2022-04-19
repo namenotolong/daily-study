@@ -44,7 +44,7 @@ public class HeartClient {
                     @Override
                     public void initChannel(SocketChannel ch) {
                         ch.pipeline()
-                                //.addLast("client-idle-handler", new IdleStateHandler(3000, 0, 0, TimeUnit.MILLISECONDS))
+                                .addLast("client-idle-handler", new IdleStateHandler(3000, 0, 0, TimeUnit.MILLISECONDS))
                                 .addLast("encoder", new StringEncoder())
                                 .addLast("decoder", new StringDecoder())
                                 .addLast(heartClientHandler);

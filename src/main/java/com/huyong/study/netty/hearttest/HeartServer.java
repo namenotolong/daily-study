@@ -35,20 +35,20 @@ public class HeartServer {
                 // 指定 Channel 为服务端 NioServerSocketChannel
                 .channel(NioServerSocketChannel.class)
                 // 设置 Netty Server 的端口
-                .localAddress(new InetSocketAddress(port))
+                //.localAddress(new InetSocketAddress(port))
                 // 服务端 accept 队列的大小
-                .option(ChannelOption.SO_BACKLOG, 1024)
+                //.option(ChannelOption.SO_BACKLOG, 1024)
                 // TCP Keepalive 机制，实现 TCP 层级的心跳保活功能
-                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                //.childOption(ChannelOption.SO_KEEPALIVE, true)
                 // 允许较小的数据包的发送，降低延迟
-                .childOption(ChannelOption.TCP_NODELAY, true)
+                //.childOption(ChannelOption.TCP_NODELAY, true)
 
                 .childHandler(new ChannelInitializer<SocketChannel>() {
 
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ch.pipeline()
-                                //.addLast("server-idle-handle", new IdleStateHandler(0, 0, 20000, TimeUnit.MILLISECONDS))
+                                .addLast("server-idle-handle", new IdleStateHandler(0, 0, 5000, TimeUnit.MILLISECONDS))
                                 .addLast("encoder", new StringEncoder())
                                 .addLast("decoder", new StringDecoder())
                                 .addLast("handler", heartServerHandler);
