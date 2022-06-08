@@ -1,11 +1,10 @@
 package com.huyong.bigdata
 
-
-class FileTest {
+class Test {
 
 }
-object FileTest {
+object Test {
   def main(args: Array[String]): Unit = {
-
+    println("hello world")
   }
 }
