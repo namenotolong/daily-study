@@ -8,7 +8,7 @@ class SparkTest {
 }
 object SparkTest {
   def main(args: Array[String]): Unit = {
-    Logger.getLogger("org").setLevel(Level.INFO);
+    Logger.getLogger("org").setLevel(Level.ERROR);
     val sparkSession = SparkSession
       .builder()
       .master("local[*]")
