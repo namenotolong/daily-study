@@ -259,7 +259,8 @@ public class Kruskal {
         Kruskal kruskal = new Kruskal();
         List<Edge<String>> edges = kruskal.mockEdge();
         List<Edge<String>> minTree = kruskal.generateMinTree(edges);
-        //System.out.println(dijkstra(mockArrGraph(), 0));
+        System.out.println(minTree);
+        System.out.println(dijkstra(mockArrGraph(), 0));
         String test = "abcabb";
         System.out.println(Arrays.toString(getNext(test)));
         long a = System.currentTimeMillis();

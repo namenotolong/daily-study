@@ -8,6 +8,10 @@ package com.huyong.study.algorithm.leetcode.dinamic;
  */
 public class PackageZeroOne {
 
+
+    /**
+     * 01背包
+     */
     public static int resolve(int[] weight, int[] v, int size) {
         int[][] dep = new int[weight.length + 1][size + 1];
         for (int i = 0; i < size; i++) {
@@ -31,10 +35,36 @@ public class PackageZeroOne {
         return dep[weight.length][size];
     }
 
+    /**
+     * 滚动数组优化
+     */
+    public static int resolveGrace(int[] weight, int[] v, int size) {
+        int[] dep = new int[size + 1];
+        for (int i = 0; i < size; i++) {
+            dep[i] = 0;
+        }
+        for (int i = 1; i <= weight.length; i++) {
+            for (int j = size; j >= 0; j--) {
+                if (j > weight[i - 1]) {
+                    dep[j] = Math.max(dep[j], dep[j - weight[i - 1]] + v[i - 1]);
+                } else {
+                    dep[j] = dep[j];
+                }
+            }
+        }
+        return dep[size];
+    }
+
+    /**
+     * 完全背包
+     * dp[i][j] = max(dp[i−1][j], dp[i][j−w[i]]+v[i]) // j >= w[i]
+     */
+
     public static void main(String[] args) {
         int[] weight = {1,3,5,7,9};
         int[] v = {1,2,4,5,6};
         System.out.println(resolve(weight, v, 10));;
+        System.out.println(resolveGrace(weight, v, 10));;
     }
 
 }

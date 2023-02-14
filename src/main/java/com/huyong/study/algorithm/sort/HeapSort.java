@@ -36,7 +36,7 @@ public class HeapSort implements Sort {
      */
     private void downHeap(int[] arr, int start, int end) {
         int cur = start;
-        for (; cur * 2 < end;) {
+        while (cur * 2 < end) {
             int t = cur * 2 + 2;
             if (t > end || arr[t] < arr[cur * 2 + 1]) {
                 --t;

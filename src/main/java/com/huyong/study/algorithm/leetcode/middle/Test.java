@@ -2327,14 +2327,300 @@ public class Test {
         return result;
     }
 
+    /**
+     * 60
+     * 4 9 "2314" 1234
+     */
+    public String getPermutation(int n, int k) {
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            list.add(i + 1);
+        }
+        StringBuilder sb = new StringBuilder();
+        List<Integer> temp = new ArrayList<>();
+        int sum = 1;
+        int count = 0;
+        for (int i = 1; i <= n && sum <= k; i++) {
+            sum *= i;
+            temp.add(sum);
+            ++count;
+        }
+        for (int i = 0; i < (n - count); i++) {
+            Integer v = list.get(0);
+
+            sb.append(v);
+            list.remove(0);
+        }
+        int leftValue = k;
+        for (int i = count - 1; i > 0; i--) {
+            int next = temp.get(i - 1);
+            int value = leftValue / next;
+            int a = leftValue % next;
+            if (a > 0) {
+                ++value;
+            }
+            Iterator<Integer> iterator = list.iterator();
+            while (iterator.hasNext()) {
+                Integer item = iterator.next();
+                if (item > value) {
+                    iterator.remove();
+                    value = item;
+                    break;
+                }
+            }
+            sb.append(value);
+            leftValue = leftValue - next * (value - 1);
+        }
+        if (!list.isEmpty()) {
+            sb.append(list.get(0));
+        }
+        return sb.toString();
+    }
+
+    //400 1-9 9 10-99 (99-10+1)*2 90*2 100-999 900*3  (999-100+1)   1000-9999 10000*4
+    //9 90*2 900*3 9000*4
+    //9*1 9*20 9*300 1 10 100
+    public int findNthDigit(int n) {
+        int c = 1;
+        long v = 1;
+        long temp;
+        int rest = n;
+        while (true) {
+            temp = 9 * v * c;
+            if (temp >= n) {
+                break;
+            }
+            v *= 10;
+            ++c;
+            rest -= temp;
+        }
+        long index = rest / c;
+        int count = rest % c;
+        if (count == 0) {
+            return String.valueOf(v + index - 1).charAt(c - 1) - '0';
+        } else {
+            return String.valueOf(v + index).charAt(count - 1) - '0';
+        }
+    }
+
+
+    /**
+     * 1031
+     * @param secondLen
+     * //输入：A = [0,6,5,2,2,5,1,9,4], L = 1, M = 2
+     * //输出：20
+     * //解释：子数组的一种选择中，[9] 长度为 1，[6,5] 长度为 2。
+     * // max(v(0, l) + v(l, length))
+     * @return
+     */
+    public int maxSumTwoNoOverlap(int[] nums, int firstLen, int secondLen) {
+        int[][] arr = new int[4][nums.length];
+        int sum1 = 0;
+        int sum2 = 0;
+        int start = 0;
+        int start2 = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum1 += nums[i];
+            sum2 += nums[i];
+            if (i - start + 1 == firstLen) {
+                arr[0][i] = i > 0 ? Math.max(sum1, arr[0][i - 1]) : sum1;
+                sum1 -= nums[start];
+                ++start;
+            }
+            if (i - start2 + 1 == secondLen) {
+                arr[1][i] = i > 0 ? Math.max(sum2, arr[1][i - 1]) : sum2;
+                sum2 -= nums[start2];
+                ++start2;
+            }
+        }
+        sum1 = 0;
+        sum2 = 0;
+        start = nums.length - 1;
+        start2 = nums.length - 1;
+        for (int i = nums.length - 1; i >= 0; i--) {
+            sum1 += nums[i];
+            sum2 += nums[i];
+            if (start - i + 1 == firstLen) {
+                arr[2][i] = i < nums.length - 1 ? Math.max(sum1, arr[2][i + 1]) : sum1;
+                sum1 -= nums[start];
+                --start;
+            }
+            if (start2 - i + 1 == secondLen) {
+                arr[3][i] = i < nums.length - 1 ? Math.max(sum2, arr[3][i + 1]) : sum2;
+                sum2 -= nums[start2];
+                --start2;
+            }
+        }
+
+        int max = 0;
+        int v1 = 0;
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (i >= firstLen - 1 && (nums.length - i - 1 >= secondLen)) {
+                v1 = arr[0][i] + arr[3][i + 1];
+                if (v1 > max) {
+                    max = v1;
+                }
+            }
+            if (i >= secondLen - 1 && (nums.length - i - 1 >= firstLen)) {
+                v1 = arr[1][i] + arr[2][i + 1];
+                if (v1 > max) {
+                    max = v1;
+                }
+            }
+        }
+        return max;
+    }
+
+    /**
+     * 2515 x,y   min(abs(y-x), n - abs(y-x)))
+     * @param words
+     * @param target
+     * @param startIndex
+     * @return
+     */
+    public int closetTarget(String[] words, String target, int startIndex) {
+        int min = Integer.MAX_VALUE;
+        int temp = -1;
+        for (int i = 0; i < words.length; i++) {
+            if (target.equals(words[i])) {
+                temp = Math.min(Math.abs(startIndex - i), words.length - Math.abs(startIndex - i));
+                if (min > temp) {
+                    min = temp;
+                }
+            }
+        }
+        return temp == -1 ? -1 : min;
+    }
+
+    /**
+     * 2262
+     * // 输入：s = "code" start,end,arr
+     * //输出：20
+     * @param s
+     * @return
+     */
+    public long appealSum(String s) {
+        Set<Character> set = new HashSet<>();
+        int[] arr = new int[26];
+        int sum = 0;
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = i; j < s.length(); j++) {
+
+            }
+        }
+        return 0;
+    }
+
+
+    //611 [2,2,3,4] 3
+    public int triangleNumber(int[] nums) {
+        Arrays.sort(nums);
+        int sum = 0;
+        int temp;
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j < nums.length; j++) {
+                temp = nums[i] + nums[j] - 1;
+                int target = triangleNumberMiddleIndex(nums, temp, j + 1);
+                if (target != -1) {
+                    sum += target - j;
+                }
+            }
+        }
+        return sum;
+    }
+    public int triangleNumberMiddleIndex(int[] nums, int v, int start) {
+        int end = nums.length - 1;
+        while (end >= start) {
+            int mid = (start + end) / 2;
+            if (nums[mid] == v) {
+                if (mid < nums.length - 1) {
+                    for (int i = mid + 1; i < nums.length && nums[i] == nums[mid]; i++) {
+                        ++mid;
+                    }
+                }
+                return mid;
+            }
+            if (nums[mid] > v) {
+                end = mid - 1;
+            } else {
+                start = mid + 1;
+            }
+        }
+        return end;
+    }
+
+    /**
+     * 273 //输入：num = 1234567
+     * //输出："One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven"
+     * @param num
+     * @return
+     */
+    String[] engNumberPer = {"thousand", "million", "billion"};
+    String[] numbers = {"One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"
+            , "Eleven", "Twelve", "Thirteen", "Fourteen",
+            "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
+    String[] numberTens = {"Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninty"};
+    public String numberToWords(int num) {
+        if (num == 0) {
+            return "Zero";
+        }
+        int index = 0;
+        int temp;
+        int indexTemp;
+        List<String> list = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        while (num > 0) {
+            temp = num % 1000;
+            num /= 1000;
+            indexTemp = index % 4;
+            if (temp > 99) {
+                sb.append(numbers[temp / 100 - 1]).append(" Hundred");
+                temp %= 100;
+                if (temp > 0) {
+                    sb.append(" ");
+                }
+            }
+            if (temp < 20) {
+                if (temp > 0) {
+                    sb.append(numbers[temp - 1]);
+                }
+            } else {
+                int ten = temp / 10;
+                int one = temp % 10;
+                sb.append(numberTens[ten - 2]);
+                if (one > 0) {
+                    sb.append(" ").append(numbers[one - 1]);
+                }
+            }
+            if (indexTemp > 0) {
+                sb.append(" ").append(engNumberPer[indexTemp - 1]);
+            }
+            if (index > 0 && indexTemp == 0) {
+                sb.append(" Trillion");
+            }
+            if (sb.length() > 0) {
+                list.add(sb.toString());
+                sb.delete(0, sb.length());
+            }
+            ++index;
+        }
+        StringBuilder result = new StringBuilder();
+        for (int i = list.size() - 1; i > -1; i--) {
+            result.append(list.get(i));
+            if (i > 0) {
+                result.append(" ");
+            }
+        }
+        return result.toString();
+    }
+
 
 
     public static void main(String[] args) {
-
-        int[] arr = {1,2,3,4};
-        int[] ints = new Test().productExceptSelf(arr);
-        System.out.println(Arrays.toString(ints));
-
+        int[] arr = {2,3,4,4};
+        Test test = new Test();
+        System.out.println(test.triangleNumber(arr));
+        System.out.println(test.numberToWords(1000000));
     }
 
 

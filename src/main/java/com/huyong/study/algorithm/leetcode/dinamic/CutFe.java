@@ -39,7 +39,6 @@ public class CutFe {
      * @return
      */
     public static int resolve(int len) {
-        int[] p = {1,5,8,9,10,17,17,20,24,30};
         int[] f = new int[len];
         f[0] = p[0];
         for (int i = 1; i < len; i++) {
