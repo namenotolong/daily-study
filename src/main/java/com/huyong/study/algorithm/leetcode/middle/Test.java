@@ -2615,12 +2615,178 @@ public class Test {
     }
 
 
+    /**
+     * 2134
+     * @param nums [1,1,0,0,1] [0,1,0,1,1,0,0]
+     * @return 0 1
+     */
+    public int minSwaps(int[] nums) {
+        int count = 0;
+        for (int num : nums) {
+            if (num == 1) {
+                ++count;
+            }
+        }
+        if (count == 0) {
+            return 0;
+        }
+        int min = 0;
+        for (int i = 0; i < count; i++) {
+            if (nums[i] == 0) {
+                ++min;
+            }
+        }
+        int temp = min;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i - 1] == 0) {
+                --temp;
+            }
+            if (nums[(count + i - 1) % nums.length] == 0) {
+                ++temp;
+            }
+            if (temp < min) {
+                min = temp;
+            }
+        }
+        return min;
+    }
+
+    /**
+     * 45
+     * @param nums [2,3,0,1,4]
+     * @return 2  f(x) = 1 + f(x + 1) || 1 + f(x + 2)
+     */
+    public int jump(int[] nums) {
+        if (nums.length == 1) {
+            return 0;
+        }
+        int[] arr = new int[nums.length - 1];
+        int temp;
+        for (int length = nums.length - 2; length >= 0; length--) {
+            int min = -1;
+            if (nums[length] == 0) {
+                arr[length] = -1;
+                continue;
+            }
+            for (int i = 1; i <= nums[length]; i++) {
+                temp = length + i;
+                if (temp >= nums.length - 1) {
+                    min = 1;
+                    break;
+                } else if (arr[temp] != -1 && (min == -1 || min > 1 + arr[temp])) {
+                    min = 1 + arr[temp];
+                }
+            }
+            arr[length] = min;
+        }
+        return arr[0];
+    }
+
+    /**
+     * 剑指 012
+     * @param nums [1, 2, 3] [2, 1, -1]
+     * @return -1 0
+     */
+    public int pivotIndex(int[] nums) {
+        int sum = 0;
+        for (int item : nums) {
+            sum+=item;
+        }
+        int temp = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (temp == sum - nums[i] - temp) {
+                return i;
+            }
+            temp += nums[i];
+        }
+        return -1;
+    }
+
+    /**
+     * 997
+     * @param n 2   n + 2
+     * @param trust [[1,2]]
+     * @return 2
+     */
+    public int findJudge(int n, int[][] trust) {
+        if (trust.length < n - 1) {
+            return -1;
+        }
+        Set<Integer> set = new HashSet<>();
+        int[] arr = new int[n];
+        for (int[] items : trust) {
+            set.add(items[0]);
+            arr[items[1] - 1]++;
+        }
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == n - 1 && !set.contains(i + 1)) {
+                return i +1;
+            }
+        }
+        return -1;
+    }
+
+
+    /**
+     * 342 1 100 10000 1，(num - 1) % 2 == 0
+     * @param n 16
+     * @return true
+     */
+    public boolean isPowerOfFour(int n) {
+        if (n <= 0) {
+            return false;
+        }
+        return (n & (n - 1)) == 0 && (Integer.toBinaryString(n).length() & 1) == 1;
+    }
+
+    /**
+     * 798
+     * @param nums [2,4,1,3,0] 2
+     *             0-2 0-4 0-1 0-3 4
+     *             i > j ? (j - i, j) : (0, j)
+     *             0-2 0-4 1-2 0-3 4
+     *             index >= 2
+     *             i,k
+     *             i < arr[i] ? i+1 ~ arr.length - arr[i] + i
+     *             i >= arr[i] ? i + 1 ~ arr.length - 1 and 0 ~ i - arr[i]
+     *             (1,2,3) (2) (0, 4) (0,1,2,3) (all)
+     *             0 2
+     *             1 3
+     *             2 3
+     *             3 4
+     *             4 3
+     *
+     * @return 3
+     */
+    public int bestRotation(int[] nums) {
+        int max = -1;
+        int index = -1;
+        int temp;
+        for (int i = 0; i < nums.length; i++) {
+            int cur = 0;
+            for (int j = 0; j < nums.length; j++) {
+                if (j < i) {
+                    temp = nums.length - i + j;
+                } else {
+                    temp = j - i;
+                }
+                if (nums[j] <= temp) {
+                    ++cur;
+                }
+            }
+            if (cur > max) {
+                max = cur;
+                index = i;
+            }
+        }
+        return index;
+    }
+
 
     public static void main(String[] args) {
-        int[] arr = {2,3,4,4};
+        int[] arr = {2,3,1,4,0};
         Test test = new Test();
-        System.out.println(test.triangleNumber(arr));
-        System.out.println(test.numberToWords(1000000));
+        System.out.println(test.bestRotation(arr));
     }
 
 
